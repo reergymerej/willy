@@ -336,3 +336,198 @@ describe('haveOwn', function () {
         }
     });
 });
+
+describe('not', function () {
+    describe('be', function () {
+        it('should throw if passes identity comparison', function () {
+            var threw = mayThrow(function () {
+                will(3).not.be(3);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if fails identity comparison', function () {
+            var threw = mayThrow(function () {
+                will(3).not.be(4);
+            });
+            
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+    });
+
+    describe('beLike', function () {
+        it('should throw if passes equality comparison', function () {
+            var threw = mayThrow(function () {
+                will('').not.beLike(false);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if fails equality comparison', function () {
+            var threw = mayThrow(function () {
+                will('').not.beLike(true);
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+    });
+
+    describe('beA/beAn', function () {
+        it('should throw if is an instanceof', function () {
+            var threw = mayThrow(function () {
+                will([]).not.beAn(Array);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+        
+        it('should not throw if item is not an instanceof', function () {
+            var threw = mayThrow(function () {
+                will([]).not.beA(String);
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+    });
+
+    describe('throw', function () {
+        it('should throw if the fn throws', function () {
+            var threw = mayThrow(function () {
+                will(function () {
+                    throw new Error('whoops');
+                }).not.throw();
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if the fn does not throw', function () {
+            var threw = mayThrow(function () {
+                will(function () {}).not.throw();
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+    });
+
+    describe('have', function () {
+        describe('Arrays', function () {
+            describe('checking for a single item', function () {
+                it('should throw if the tested item is found', function () {
+
+                    var threw = mayThrow(function () {
+                        will([1, 2, 3]).not.have(1);
+                    });
+
+                    if (!threw) {
+                        err(E.NO_THROW);
+                    }
+                });
+
+                it('should not throw if the tested item is not found', function () {
+                    var threw = mayThrow(function () {
+                        will([1, 2, 3]).not.have(5);
+                    });
+
+                    if (threw) {
+                        err(E.THROW);
+                    }
+                });
+            });
+
+            describe.only('checking for multiple items', function () {
+                it('should throw if it has all items', function () {
+
+                    var threw = mayThrow(function () {
+                        will([1, 2, 3]).not.have([1, 3]);
+                    });
+
+                    if (!threw) {
+                        err(E.NO_THROW);
+                    }
+                });
+
+                it('should not throw if it does not have all items', function () {
+
+                    var threw = mayThrow(function () {
+                        will([1, 2, 3]).not.have([1, 2, 3, 4]);
+                    });
+
+                    if (threw) {
+                        err(E.THROW);
+                    }
+                });
+            });
+        });
+
+        // describe('Objects', function () {
+        //     describe('checking for single items', function () {
+        //         it('should throw if tested item has member', function () {
+        //             var threw = mayThrow(function () {
+        //                 will({foo: true}).not.have('foo');
+        //             });
+
+        //             if (!threw) {
+        //                 err(E.NO_THROW);
+        //             }
+        //         });
+
+        //         it('should not throw if tested item does not have member', function () {
+        //             var threw = mayThrow(function () {
+        //                 will({foo: true}).not.have('bar');
+        //             });
+
+        //             if (threw) {
+        //                 err(E.THROW);
+        //             }
+        //         });
+        //     });
+
+        //     describe('checking for multiple items', function () {
+        //         it('should not throw if it has all members', function () {
+        //             var threw = mayThrow(function () {
+        //                 will({
+        //                     foo: true,
+        //                     bar: true
+        //                 }).have(['foo', 'bar']);
+        //             });
+
+        //             if (threw) {
+        //                 err(E.THROW);
+        //             } 
+        //         });
+
+        //         it('should throw if it does not have all members', function () {
+        //             var threw = mayThrow(function () {
+        //                 will({
+        //                     foo: true,
+        //                     bar: true
+        //                 }).have(['foo', 'bar', 'baz']);
+        //             });
+
+        //             if (!threw) {
+        //                 err(E.NO_THROW);
+        //             } 
+        //         });
+        //     });
+        // });
+    });
+});

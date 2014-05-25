@@ -33,9 +33,14 @@ var mayThrow = function (fn) {
 
 /**
 * @cfg {*} item The item to be interrogated (item in Question, get it?).
+* @cfg {Boolean} negative
 */
-var Question = function (item) {
+var Question = function (item, negative) {
     this.item = item;
+    this.negative = !!negative;
+    if (!this.negative) {
+        this.not = new Question(item, true);
+    }
 };
 
 /**
@@ -56,7 +61,10 @@ Question.prototype.have = function (criterion) {
     for (i = 0, max = criteria.length; i < max; i++) {
         
         if (isArray) {
-            if (this.item.indexOf(criteria[i]) === -1) {
+
+            console.log(this.isTrue(this.item.indexOf(criteria[i]) === -1));
+
+            if (this.isTrue(this.item.indexOf(criteria[i]) === -1)) {
                 err(E.NOT_IN_ARR);
             }
         } else {
@@ -112,7 +120,7 @@ Question.prototype.haveOwn = function (property) {
 * @param {*} criterion
 */
 Question.prototype.be = function (criterion) {
-    if (this.item !== criterion) {
+    if (this.isFalse(this.item === criterion)) {
         err(E.NOT_ST_EQL);
     }
 };
@@ -122,7 +130,7 @@ Question.prototype.be = function (criterion) {
 * @param {*} criterion
 */
 Question.prototype.beLike = function (criterion) {
-    if (this.item != criterion) {
+    if (!this.isTrue(this.item == criterion)) {
         err(E.NOT_EQL);
     }
 };
@@ -132,7 +140,7 @@ Question.prototype.beLike = function (criterion) {
 */
 Question.prototype.throw = function () {
     var threw = mayThrow(this.item);
-    if (!threw) {
+    if (!this.isTrue(threw)) {
         err(E.NO_THROW);
     }
 };
@@ -143,9 +151,24 @@ Question.prototype.throw = function () {
 */
 Question.prototype.beA = 
     Question.prototype.beAn = function (criterion) {
-    if (!(this.item instanceof criterion)) {
+
+    if (!this.isTrue(this.item instanceof criterion)) {
         err(E.INST);
     }
+};
+
+/**
+* Tests truth of an expression based on if the
+* Question has been negated.
+* @param {*} expression
+* @return {Boolean}
+*/
+Question.prototype.isTrue = function (expression) {
+    return this.negative ? !expression : !!expression;
+};
+
+Question.prototype.isFalse = function (expression) {
+    return !this.isTrue(expression);
 };
 
 /**

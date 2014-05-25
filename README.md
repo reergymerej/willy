@@ -52,6 +52,9 @@ describe('some test suite', function () {
 
         // own properties
         will(foo).haveOwn('baz');
+
+        // negate any question
+        will(3).not.be(4);
     });
 });
 ```
