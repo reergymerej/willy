@@ -29,7 +29,7 @@ describe('some test suite', function () {
 
         // only specific items in an Array
         will([3]).haveOnly(3);
-        will([1, 2, 3]).haveOnly([3, 2, 1]);
+        will([1, 2, 3]).haveOnly([1, 2, 3]);
 
         // item in an Object (any object)
         will({foo: true}).have('foo');
