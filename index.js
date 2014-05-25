@@ -4,7 +4,9 @@ var E = {
     UNDEF: 'not defined',
     INST: 'not instanceof',
     NO_THROW: 'did not throw error',
-    NOT_IN_ARR: 'not in Array'
+    NOT_IN_ARR: 'not in Array',
+    NOT_EQL: 'not equal',
+    NOT_ST_EQL: 'not strictly equal'
 };
 
 var err = function (msg) {
@@ -49,7 +51,17 @@ Question.prototype.have = function (criterion) {
 */
 Question.prototype.be = function (criterion) {
     if (this.item !== criterion) {
-        throw new Error('not equal');
+        err(E.NOT_ST_EQL);
+    }
+};
+
+/**
+* Throws error based on equality comparison.
+* @param {*} criterion
+*/
+Question.prototype.beLike = function (criterion) {
+    if (this.item != criterion) {
+        err(E.NOT_EQL);
     }
 };
 

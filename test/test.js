@@ -56,6 +56,28 @@ describe('be', function () {
     });
 });
 
+describe('beLike', function () {
+    it('should not throw if passes equality comparison', function () {
+        var threw = mayThrow(function () {
+            will('').beLike(false);
+        });
+
+        if (threw) {
+            err(E.THROW);
+        }
+    });
+
+    it('should throw if fails equality comparison', function () {
+        var threw = mayThrow(function () {
+            will('').beLike(true);
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+});
+
 describe('throw', function () {
     it('should not throw if the fn throws', function () {
         var threw = mayThrow(function () {
