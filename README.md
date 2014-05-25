@@ -30,6 +30,9 @@ describe('some test suite', function () {
         // item in an Object (any object)
         will({foo: true}).have('foo');
 
+        // multiple items in an Object
+        will({ foo: true, bar: true }).have(['foo', 'bar']);
+
         // own properties
         will(foo).haveOwn('baz');
     });

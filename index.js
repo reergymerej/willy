@@ -53,16 +53,16 @@ Question.prototype.have = function (criterion) {
 
     var i, max;
 
-    if (isArray) {
-        for (i = 0, max = criteria.length; i < max; i++) {
+    for (i = 0, max = criteria.length; i < max; i++) {
+        
+        if (isArray) {
             if (this.item.indexOf(criteria[i]) === -1) {
                 err(E.NOT_IN_ARR);
             }
-        }
-
-    } else {
-        if (this.item[criterion] === undefined) {
-            err(E.NOT_IN_OBJ);
+        } else {
+            if (this.item[criteria[i]] === undefined) {
+                err(E.NOT_IN_OBJ);
+            }
         }
     }
 };
