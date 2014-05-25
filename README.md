@@ -11,7 +11,11 @@ describe('some test suite', function () {
         // test identity
         will(3).be(3);
 
-        // test for an item in an array
+        // expected Errors
+        // (Pass the reference, don't execute it.)
+        will(foo.someFn).throw();
+
+        // test for an item in an Array
         will([1, 2, 3]).have(3);
     });
 });

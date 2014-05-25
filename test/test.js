@@ -4,7 +4,8 @@ var crybaby = require('../index'),
 var E = {
     UNDEF: 'not defined',
     INST: 'not instanceof',
-    NO_THROW: 'did not throw error'
+    NO_THROW: 'did not throw error',
+    THROW: 'unexpected error'
 };
 
 var err = function (msg) {
@@ -33,10 +34,63 @@ describe('will', function () {
     });
 });
 
+describe('be', function () {
+    it('should not throw if passes identity comparison', function () {
+        var threw = mayThrow(function () {
+            will(3).be(3);
+        });
+
+        if (threw) {
+            err(E.THROW);
+        }
+    });
+
+    it('should throw if fails identity comparison', function () {
+        var threw = mayThrow(function () {
+            will(3).be(4);
+        });
+        
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+});
+
+describe('throw', function () {
+    it('should not throw if the fn throws', function () {
+        var threw = mayThrow(function () {
+            will(function () {
+                throw new Error('whoops');
+            }).throw();
+        });
+
+        if (threw) {
+            err(E.THROW);
+        }
+    });
+
+    it('should throw if the fn does not throw', function () {
+        var threw = mayThrow(function () {
+            will(function () {}).throw();
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+});
+
 describe('have', function () {
     describe('Arrays', function () {
         it('should not throw if the tested item is found', function () {
-            will([1, 2, 3]).have(1);
+
+            var threw = mayThrow(function () {
+                will([1, 2, 3]).have(1);
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
         });
 
         it('should throw if the tested item is not found', function () {
@@ -48,21 +102,5 @@ describe('have', function () {
                 err(E.NO_THROW);
             }
         });
-    });
-});
-
-describe('be', function () {
-    it('should not throw if passes identity comparison', function () {
-        will(3).be(3);
-    });
-
-    it('should throw if fails identity comparison', function () {
-        var threw = mayThrow(function () {
-            will(3).be(4);
-        });
-        
-        if (!threw) {
-            err(E.NO_THROW);
-        }
     });
 });
