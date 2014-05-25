@@ -175,3 +175,39 @@ describe('have', function () {
         });
     });
 });
+
+describe('haveOwn', function () {
+    var Foo = function () {};
+    Foo.prototype.bar = true;
+
+    var foo;
+
+    beforeEach(function () {
+        foo = new Foo();
+        foo.baz = true;
+    });
+
+    afterEach(function () {
+        foo = undefined;
+    });
+
+    it('should not throw if tested item has its own member', function () {
+        var threw = mayThrow(function () {
+            will(foo).haveOwn('baz');
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if tested item does not have its own member', function () {
+        var threw = mayThrow(function () {
+            will(foo).haveOwn('bar');
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+});

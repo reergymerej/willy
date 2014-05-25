@@ -23,6 +23,12 @@ describe('some test suite', function () {
 
         // item in an Array
         will([1, 2, 3]).have(3);
+
+        // item in an Object (any object)
+        will({foo: true}).have('foo');
+
+        // own properties
+        will(foo).haveOwn('baz');
     });
 });
 ```

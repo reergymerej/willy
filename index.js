@@ -7,7 +7,8 @@ var E = {
     NOT_IN_ARR: 'not in Array',
     NOT_EQL: 'not equal',
     NOT_ST_EQL: 'not strictly equal',
-    NOT_IN_OBJ: 'member not in object'
+    NOT_IN_OBJ: 'member not in object',
+    HAS_OWN: 'does not have own property'
 };
 
 var err = function (msg) {
@@ -53,6 +54,16 @@ Question.prototype.have = function (criterion) {
         if (this.item[criterion] === undefined) {
             err(E.NOT_IN_OBJ);
         }
+    }
+};
+
+/**
+* Checks for own properties.
+* @param {String} property
+*/
+Question.prototype.haveOwn = function (property) {
+    if (!this.item.hasOwnProperty(property)) {
+        err(E.HAS_OWN);
     }
 };
 
