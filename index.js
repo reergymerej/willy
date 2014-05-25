@@ -6,7 +6,8 @@ var E = {
     NO_THROW: 'did not throw error',
     NOT_IN_ARR: 'not in Array',
     NOT_EQL: 'not equal',
-    NOT_ST_EQL: 'not strictly equal'
+    NOT_ST_EQL: 'not strictly equal',
+    NOT_IN_OBJ: 'member not in object'
 };
 
 var err = function (msg) {
@@ -40,8 +41,18 @@ var Question = function (item) {
 * @throws {Error}
 */
 Question.prototype.have = function (criterion) {
-    if (this.item.indexOf(criterion) === -1) {
-        err(E.NOT_IN_ARR);
+
+    // There are different rules for Arrays and Objects.
+    var isArray = this.item instanceof Array;
+
+    if (isArray) {
+        if (this.item.indexOf(criterion) === -1) {
+            err(E.NOT_IN_ARR);
+        }
+    } else {
+        if (this.item[criterion] === undefined) {
+            err(E.NOT_IN_OBJ);
+        }
     }
 };
 

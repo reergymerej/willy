@@ -152,4 +152,26 @@ describe('have', function () {
             }
         });
     });
+
+    describe('Objects', function () {
+        it('should not throw if tested item has member', function () {
+            var threw = mayThrow(function () {
+                will({foo: true}).have('foo');
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+
+        it('should throw if tested item does not have member', function () {
+            var threw = mayThrow(function () {
+                will({foo: true}).have('bar');
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
 });
