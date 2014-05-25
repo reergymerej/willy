@@ -1,5 +1,4 @@
-var crybaby = require('../index'),
-    will = crybaby.will;
+var will = require('../index').will;
 
 var E = {
     UNDEF: 'not defined',

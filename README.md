@@ -5,6 +5,8 @@ An assertion library.
 ## Examples
 
 ```js
+var will = require('willy').will;
+
 describe('some test suite', function () {
     it('should blah blah blah', function () {
         
