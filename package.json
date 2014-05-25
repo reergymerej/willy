@@ -1,0 +1,28 @@
+{
+  "name": "cry-baby",
+  "version": "0.0.0",
+  "description": "an assertion library",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://reergymerej@github.com/reergymerej/cry-baby.git"
+  },
+  "keywords": [
+    "assertion library"
+  ],
+  "author": "Jeremy Greer <jeremy.greer.atl@gmail.com> (http://jeremygreer.herokuapp.com/)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/reergymerej/cry-baby/issues"
+  },
+  "homepage": "https://github.com/reergymerej/cry-baby",
+  "devDependencies": {
+    "mocha": "~1.19.0"
+  }
+}
