@@ -39,6 +39,10 @@ describe('some test suite', function () {
         // multiple items in an Object
         will({ foo: true, bar: true }).have(['foo', 'bar']);
 
+        // only specific items in an Object
+        will({ foo: 1 }).haveOnly('foo');
+        will({ foo: 1, bar: 1 }).haveOnly(['foo', 'bar']);
+
         // own properties
         will(foo).haveOwn('baz');
     });

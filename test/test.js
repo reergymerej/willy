@@ -235,7 +235,7 @@ describe('haveOnly', function () {
     describe('when checking an Array', function () {
         it('should not throw if only has specified items', function () {
             var threw = mayThrow(function () {
-                will([1, 2, 3]).haveOnly([3, 2, 1]);
+                will([1, 2, 3]).haveOnly([1, 2, 3]);
             });
 
             if (threw) {
@@ -250,6 +250,52 @@ describe('haveOnly', function () {
 
             if (threw) {
                 err(E.THROW);
+            }
+        });
+
+        it('should throw when more than specified are present', function () {
+            var threw = mayThrow(function () {
+                will([1, 2, 3]).haveOnly([1, 2]);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+
+    describe('when checking an Object', function () {
+        it('should not throw if only has specified items', function () {
+            var threw = mayThrow(function () {
+                will({ foo: 1, bar: 1 }).haveOnly(['foo', 'bar']);
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+
+        it('should also work when specifying a single item', function () {
+            var threw = mayThrow(function () {
+                will({ foo: 1 }).haveOnly('foo');
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+
+        it('should throw if has more than specified items', function () {
+            var threw = mayThrow(function () {
+                will({
+                    foo: 1,
+                    bar: 1,
+                    baz: 1
+                }).haveOnly(['foo', 'bar']);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
             }
         });
     });

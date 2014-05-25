@@ -9,7 +9,8 @@ var E = {
     NOT_ST_EQL: 'not strictly equal',
     NOT_IN_OBJ: 'member not in object',
     HAS_OWN: 'does not have own property',
-    ARR_HAS_EXTRA: 'has more properties than expected'
+    ARR_HAS_EXTRA: 'has more properties than expected',
+    OBJ_HAS_EXTRA: 'has more properties than expected'
 };
 
 var err = function (msg) {
@@ -74,12 +75,24 @@ Question.prototype.haveOnly = function (criterion) {
     var criteria = (criterion instanceof Array) ?
         criterion : [criterion];
 
+    // There are different rules for Arrays and Objects.
+    var isArray = this.item instanceof Array;
+
     var i, max;
 
-    for (i = 0, max = this.item.length; i < max; i++) {
-        
-        if (criteria.indexOf(this.item[i]) === -1) {
-            err(E.ARR_HAS_EXTRA);
+    if (isArray) {
+        for (i = 0, max = this.item.length; i < max; i++) {
+            if (criteria.indexOf(this.item[i]) === -1) {
+                err(E.ARR_HAS_EXTRA);
+            }
+        }
+    } else {
+        for (i in this.item) {
+            if (this.item.hasOwnProperty(i)) {
+                if (criteria.indexOf(i) === -1) {
+                    err(E.OBJ_HAS_EXTRA);
+                }
+            }
         }
     }
 };
