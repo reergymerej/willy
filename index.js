@@ -8,7 +8,8 @@ var E = {
     NOT_EQL: 'not equal',
     NOT_ST_EQL: 'not strictly equal',
     NOT_IN_OBJ: 'member not in object',
-    HAS_OWN: 'does not have own property'
+    HAS_OWN: 'does not have own property',
+    ARR_HAS_EXTRA: 'has more properties than expected'
 };
 
 var err = function (msg) {
@@ -43,8 +44,6 @@ var Question = function (item) {
 */
 Question.prototype.have = function (criterion) {
 
-    // If criterion is an Array, we have to check
-    // for the existence of each item.
     var criteria = (criterion instanceof Array) ?
         criterion : [criterion];
 
@@ -63,6 +62,24 @@ Question.prototype.have = function (criterion) {
             if (this.item[criteria[i]] === undefined) {
                 err(E.NOT_IN_OBJ);
             }
+        }
+    }
+};
+
+/**
+* Check for existence of only specified items.
+* @param {*} criterion
+*/
+Question.prototype.haveOnly = function (criterion) {
+    var criteria = (criterion instanceof Array) ?
+        criterion : [criterion];
+
+    var i, max;
+
+    for (i = 0, max = this.item.length; i < max; i++) {
+        
+        if (criteria.indexOf(this.item[i]) === -1) {
+            err(E.ARR_HAS_EXTRA);
         }
     }
 };

@@ -232,6 +232,30 @@ describe('have', function () {
     });
 });
 
+describe('haveOnly', function () {
+    describe('when checking an Array', function () {
+        it('should not throw if only has specified items', function () {
+            var threw = mayThrow(function () {
+                will([1, 2, 3]).haveOnly([3, 2, 1]);
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+
+        it('should also work when specifying a single item', function () {
+            var threw = mayThrow(function () {
+                will([3]).haveOnly(3);
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+    });
+});
+
 describe('haveOwn', function () {
     var Foo = function () {};
     Foo.prototype.bar = true;

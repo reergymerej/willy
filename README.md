@@ -27,6 +27,10 @@ describe('some test suite', function () {
         // multiple items in an Array
         will([1, 2, 3]).have([1, 3]);
 
+        // only specific items in an Array
+        will([3]).haveOnly(3);
+        will([1, 2, 3]).haveOnly([3, 2, 1]);
+
         // item in an Object (any object)
         will({foo: true}).have('foo');
 
