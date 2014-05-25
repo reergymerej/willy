@@ -43,13 +43,23 @@ var Question = function (item) {
 */
 Question.prototype.have = function (criterion) {
 
+    // If criterion is an Array, we have to check
+    // for the existence of each item.
+    var criteria = (criterion instanceof Array) ?
+        criterion : [criterion];
+
     // There are different rules for Arrays and Objects.
     var isArray = this.item instanceof Array;
 
+    var i, max;
+
     if (isArray) {
-        if (this.item.indexOf(criterion) === -1) {
-            err(E.NOT_IN_ARR);
+        for (i = 0, max = criteria.length; i < max; i++) {
+            if (this.item.indexOf(criteria[i]) === -1) {
+                err(E.NOT_IN_ARR);
+            }
         }
+
     } else {
         if (this.item[criterion] === undefined) {
             err(E.NOT_IN_OBJ);

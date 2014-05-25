@@ -24,6 +24,9 @@ describe('some test suite', function () {
         // item in an Array
         will([1, 2, 3]).have(3);
 
+        // multiple items in an Array
+        will([1, 2, 3]).have([1, 3]);
+
         // item in an Object (any object)
         will({foo: true}).have('foo');
 

@@ -131,25 +131,51 @@ describe('throw', function () {
 
 describe('have', function () {
     describe('Arrays', function () {
-        it('should not throw if the tested item is found', function () {
+        describe('checking for a single item', function () {
+            it('should not throw if the tested item is found', function () {
 
-            var threw = mayThrow(function () {
-                will([1, 2, 3]).have(1);
+                var threw = mayThrow(function () {
+                    will([1, 2, 3]).have(1);
+                });
+
+                if (threw) {
+                    err(E.THROW);
+                }
             });
 
-            if (threw) {
-                err(E.THROW);
-            }
+            it('should throw if the tested item is not found', function () {
+                var threw = mayThrow(function () {
+                    will([1, 2, 3]).have(5);
+                });
+
+                if (!threw) {
+                    err(E.NO_THROW);
+                }
+            });
         });
 
-        it('should throw if the tested item is not found', function () {
-            var threw = mayThrow(function () {
-                will([1, 2, 3]).have(5);
+        describe('checking for multiple items', function () {
+            it('should not throw if it has all items', function () {
+
+                var threw = mayThrow(function () {
+                    will([1, 2, 3]).have([1, 3]);
+                });
+
+                if (threw) {
+                    err(E.THROW);
+                }
             });
 
-            if (!threw) {
-                err(E.NO_THROW);
-            }
+            it('should throw if it does not have all items', function () {
+
+                var threw = mayThrow(function () {
+                    will([1, 2, 3]).have([1, 2, 3, 4]);
+                });
+
+                if (!threw) {
+                    err(E.NO_THROW);
+                }
+            });
         });
     });
 
