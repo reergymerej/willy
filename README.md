@@ -1,6 +1,17 @@
 # Willy
 
-An assertion library.
+This is an assertion library designed to be simple and readable.  It doesn't follow the normal BDD/TDD assertion styles, but reads more like questions.
+
+```js
+describe('some test suite', function () {
+    it('should do X, Y, and Z', function () {
+
+        // Will it?
+        will(true).be(true);
+
+    });
+});
+```
 
 ## Examples
 
@@ -8,7 +19,7 @@ An assertion library.
 var will = require('willy').will;
 
 describe('some test suite', function () {
-    it('should blah blah blah', function () {
+    it('should do X, Y, and Z', function () {
         
         // identity
         will(3).be(3);
@@ -25,8 +36,6 @@ describe('some test suite', function () {
 
         // item in an Array
         will([1, 2, 3]).have(3);
-
-        // multiple items in an Array
         will([1, 2, 3]).have([1, 3]);
 
         // only specific items in an Array
@@ -35,8 +44,6 @@ describe('some test suite', function () {
 
         // item in an Object (any object)
         will({foo: true}).have('foo');
-
-        // multiple items in an Object
         will({ foo: true, bar: true }).have(['foo', 'bar']);
 
         // only specific items in an Object
