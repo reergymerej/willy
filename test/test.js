@@ -1,9 +1,9 @@
 var crybaby = require('../index'),
-    should = crybaby.should;
+    will = crybaby.will;
 
-describe('#should', function () {
+describe('#will', function () {
     it('should exist', function () {
-        if (should === undefined) {
+        if (will === undefined) {
             throw new Error('not defined');
         }
     });

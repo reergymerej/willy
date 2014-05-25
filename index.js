@@ -1,7 +1,7 @@
 'use strict';
 
-var should = function () {
+var will = function () {
 
 };
 
-exports.should = should;
+exports.will = will;
