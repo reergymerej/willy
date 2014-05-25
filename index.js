@@ -76,6 +76,17 @@ Question.prototype.throw = function () {
 };
 
 /**
+* Tests inheritance
+* @param {Function} criterion
+*/
+Question.prototype.beA = 
+    Question.prototype.beAn = function (criterion) {
+    if (!(this.item instanceof criterion)) {
+        err(E.INST);
+    }
+};
+
+/**
 * @param {Array} interrogated
 * @return {Question}
 */

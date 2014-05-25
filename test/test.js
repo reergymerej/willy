@@ -78,6 +78,33 @@ describe('beLike', function () {
     });
 });
 
+describe('beA/beAn', function () {
+    it('should be the same as beAn', function () {
+        var question = will();
+        will(question.beA).be(question.beAn);
+    });
+
+    it('should not throw if is an instanceof', function () {
+        var threw = mayThrow(function () {
+            will([]).beAn(Array);
+        });
+
+        if (threw) {
+            err(E.THROW);
+        }
+    });
+    
+    it('should throw if item is not an instanceof', function () {
+        var threw = mayThrow(function () {
+            will([]).beA(String);
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+});
+
 describe('throw', function () {
     it('should not throw if the fn throws', function () {
         var threw = mayThrow(function () {

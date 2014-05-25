@@ -8,14 +8,20 @@ An assertion library.
 describe('some test suite', function () {
     it('should blah blah blah', function () {
         
-        // test identity
+        // identity
         will(3).be(3);
 
-        // expected Errors
-        // (Pass the reference, don't execute it.)
-        will(foo.someFn).throw();
+        // equality
+        will('').beLike(false);
 
-        // test for an item in an Array
+        // inheritance
+        will('').beA(String);
+        will([]).beAn(Array);
+
+        // expected Errors
+        will(someFn).throw();
+
+        // item in an Array
         will([1, 2, 3]).have(3);
     });
 });
