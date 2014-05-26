@@ -1,4 +1,5 @@
-var will = require('../index').will;
+var willy = require('../index'),
+    will = willy.will;
 
 var E = {
     UNDEF: 'not defined',
@@ -98,6 +99,30 @@ describe('beA/beAn', function () {
             will([]).beA(String);
         });
 
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+});
+
+describe('exist', function () {
+    var foo = { bar: 1 };
+
+    it('should not throw if item is defined', function () {
+        var threw = mayThrow(function () {
+            will(foo.bar).exist();
+        });
+
+        if (threw) {
+            err(E.THROW);
+        }
+    });
+
+    it('should throw if item is undefined', function () {
+        var threw = mayThrow(function () {
+            will(foo.baz).exist();
+        });
+        
         if (!threw) {
             err(E.NO_THROW);
         }
@@ -450,6 +475,30 @@ describe('not', function () {
         });
     });
 
+    describe('exist', function () {
+        var foo = { bar: 1 };
+
+        it('should throw if item is defined', function () {
+            var threw = mayThrow(function () {
+                will(foo.bar).not.exist();
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if item is undefined', function () {
+            var threw = mayThrow(function () {
+                will(foo.baz).not.exist();
+            });
+            
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+    });
+
     describe('throw', function () {
         it('should throw if the fn throws', function () {
             var threw = mayThrow(function () {
@@ -709,3 +758,9 @@ describe('not', function () {
         });
     });
 });
+
+// describe('addTest', function () {
+//     it('should exist', function () {
+//         will(willy.addTest).beLike(true);
+//     });
+// });

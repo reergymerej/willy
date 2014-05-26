@@ -263,6 +263,15 @@ Question.prototype.beA =
 };
 
 /**
+* Tests for an undefined item.
+*/
+Question.prototype.exist = function () {
+    if (this.isTrue(this.item === undefined)) {
+        err(E.UNDEF);
+    }
+};
+
+/**
 * Tests truth of an expression based on if the
 * Question has been negated.
 * @param {*} expression

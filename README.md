@@ -22,6 +22,7 @@ describe('some test suite', function () {
 * be
 * beA/beAn
 * beLike
+* exist
 * have
 * haveAny
 * haveOnly
@@ -61,6 +62,19 @@ will('').beLike(false);
 
 // fail
 will('false').beLike(false);
+```
+
+#### exist
+checks existence
+
+```js
+// pass
+var foo = { bar: 1 };
+
+will(foo.bar).exist();
+
+// fail
+will(foo.baz).exist();
 ```
 
 #### have
