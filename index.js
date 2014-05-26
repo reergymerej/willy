@@ -44,33 +44,82 @@ var Question = function (item, negative) {
 };
 
 /**
-* Throws an error if an item is not in the item in Question.
-* @param {*} criterion
+* Execute a function for each item.
+* @param {Object/Array} item
+* @param {Function} value, key - return false to stop
+*/
+var forEach = function (item, fn) {
+    var i,
+        max;
+
+    if (item instanceof Array) {
+        for (i = 0, max = item.length; i < max; i++) {
+            if (fn(item[i], i) === false) {
+                break;
+            }
+        }
+    } else {
+        for (i in item) {
+            if (item.hasOwnProperty(i)) {
+                if (fn(item[i], i) === false) {
+                    break;
+                }
+            }
+        }
+    }
+};
+
+/**
+* Test for the presence of properties in an Object or Array.
+* @param {String[]} needles
+* @param {Array/Object} collection
+* @param {Boolean} all Only return true if all needles are found.
+* @return {Boolean}
+*/
+var propertiesExist = function (needles, hayStack, all) {
+    var result = true,
+        isArray = hayStack instanceof Array,
+        found;
+
+    forEach(needles, function (value, key) {
+
+        if (isArray) {
+            found = hayStack.indexOf(value) !== -1;
+        } else {
+            found = hayStack[value] !== undefined;
+        }
+
+        if (all && !found) {
+            result = false;
+            return false;
+        }
+    });
+
+    return result;
+};
+
+var allPropertiesExist = function (needles, hayStack) {
+    return propertiesExist(needles, hayStack, true);
+};
+
+/**
+* Tests to see if criteria are all in item.
+* @param {*} criteria
 * @throws {Error}
 */
-Question.prototype.have = function (criterion) {
-
-    var criteria = (criterion instanceof Array) ?
-        criterion : [criterion];
+Question.prototype.have = function (criteria) {
 
     // There are different rules for Arrays and Objects.
     var isArray = this.item instanceof Array;
 
-    var i, max;
+    criteria = (criteria instanceof Array) ?
+        criteria : [criteria];
 
-    for (i = 0, max = criteria.length; i < max; i++) {
-        
+    if (this.isFalse(allPropertiesExist(criteria, this.item))) {
         if (isArray) {
-
-            console.log(this.isTrue(this.item.indexOf(criteria[i]) === -1));
-
-            if (this.isTrue(this.item.indexOf(criteria[i]) === -1)) {
-                err(E.NOT_IN_ARR);
-            }
+            err(E.NOT_IN_ARR);
         } else {
-            if (this.item[criteria[i]] === undefined) {
-                err(E.NOT_IN_OBJ);
-            }
+            err(E.NOT_IN_OBJ);
         }
     }
 };

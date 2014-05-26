@@ -453,7 +453,7 @@ describe('not', function () {
                 });
             });
 
-            describe.only('checking for multiple items', function () {
+            describe('checking for multiple items', function () {
                 it('should throw if it has all items', function () {
 
                     var threw = mayThrow(function () {
@@ -478,56 +478,57 @@ describe('not', function () {
             });
         });
 
-        // describe('Objects', function () {
-        //     describe('checking for single items', function () {
-        //         it('should throw if tested item has member', function () {
-        //             var threw = mayThrow(function () {
-        //                 will({foo: true}).not.have('foo');
-        //             });
+        
+        describe('Objects', function () {
+            describe('checking for single items', function () {
+                it('should throw if tested item has member', function () {
+                    var threw = mayThrow(function () {
+                        will({foo: true}).not.have('foo');
+                    });
 
-        //             if (!threw) {
-        //                 err(E.NO_THROW);
-        //             }
-        //         });
+                    if (!threw) {
+                        err(E.NO_THROW);
+                    }
+                });
 
-        //         it('should not throw if tested item does not have member', function () {
-        //             var threw = mayThrow(function () {
-        //                 will({foo: true}).not.have('bar');
-        //             });
+                it('should not throw if tested item does not have member', function () {
+                    var threw = mayThrow(function () {
+                        will({foo: true}).not.have('bar');
+                    });
 
-        //             if (threw) {
-        //                 err(E.THROW);
-        //             }
-        //         });
-        //     });
+                    if (threw) {
+                        err(E.THROW);
+                    }
+                });
+            });
 
-        //     describe('checking for multiple items', function () {
-        //         it('should not throw if it has all members', function () {
-        //             var threw = mayThrow(function () {
-        //                 will({
-        //                     foo: true,
-        //                     bar: true
-        //                 }).have(['foo', 'bar']);
-        //             });
+            describe('checking for multiple items', function () {
+                it('should throw if it has all members', function () {
+                    var threw = mayThrow(function () {
+                        will({
+                            foo: true,
+                            bar: true
+                        }).not.have(['foo', 'bar']);
+                    });
 
-        //             if (threw) {
-        //                 err(E.THROW);
-        //             } 
-        //         });
+                    if (!threw) {
+                        err(E.NO_THROW);
+                    } 
+                });
 
-        //         it('should throw if it does not have all members', function () {
-        //             var threw = mayThrow(function () {
-        //                 will({
-        //                     foo: true,
-        //                     bar: true
-        //                 }).have(['foo', 'bar', 'baz']);
-        //             });
+                it('should not throw if it does not have all members', function () {
+                    var threw = mayThrow(function () {
+                        will({
+                            foo: true,
+                            bar: true
+                        }).not.have(['foo', 'bar', 'baz']);
+                    });
 
-        //             if (!threw) {
-        //                 err(E.NO_THROW);
-        //             } 
-        //         });
-        //     });
-        // });
+                    if (threw) {
+                        err(E.THROW);
+                    } 
+                });
+            });
+        });
     });
 });
