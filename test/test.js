@@ -129,7 +129,7 @@ describe('throw', function () {
 });
 
 describe('have', function () {
-    describe('Arrays', function () {
+    describe('when checking an Array', function () {
         describe('checking for a single item', function () {
             it('should not throw if the tested item is found', function () {
 
@@ -178,7 +178,7 @@ describe('have', function () {
         });
     });
 
-    describe('Objects', function () {
+    describe('when checking an Object', function () {
         describe('checking for single items', function () {
             it('should not throw if tested item has member', function () {
                 var threw = mayThrow(function () {
@@ -429,7 +429,7 @@ describe('not', function () {
     });
 
     describe('have', function () {
-        describe('Arrays', function () {
+        describe('when checking an Array', function () {
             describe('checking for a single item', function () {
                 it('should throw if the tested item is found', function () {
 
@@ -477,9 +477,8 @@ describe('not', function () {
                 });
             });
         });
-
         
-        describe('Objects', function () {
+        describe('when checking an Object', function () {
             describe('checking for single items', function () {
                 it('should throw if tested item has member', function () {
                     var threw = mayThrow(function () {
