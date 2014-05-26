@@ -530,4 +530,54 @@ describe('not', function () {
             });
         });
     });
+
+    describe('haveOnly', function () {
+        describe('when checking an Array', function () {
+            it('should throw if only has specified items', function () {
+                var threw = mayThrow(function () {
+                    will([1, 2, 3]).not.haveOnly([1, 2, 3]);
+                });
+
+                if (!threw) {
+                    err(E.NO_THROW);
+                }
+            });
+
+            it('should not throw when more than specified are present', function () {
+                var threw = mayThrow(function () {
+                    will([1, 2, 3]).not.haveOnly([1, 2]);
+                });
+
+                if (threw) {
+                    err(E.THROW);
+                }
+            });
+        });
+
+        describe('when checking an Object', function () {
+            it('should throw if only has specified items', function () {
+                var threw = mayThrow(function () {
+                    will({ foo: 1, bar: 1 }).not.haveOnly(['foo', 'bar']);
+                });
+
+                if (!threw) {
+                    err(E.NO_THROW);
+                }
+            });
+
+            it('should not throw if has more than specified items', function () {
+                var threw = mayThrow(function () {
+                    will({
+                        foo: 1,
+                        bar: 1,
+                        baz: 1
+                    }).not.haveOnly(['foo', 'bar']);
+                });
+
+                if (threw) {
+                    err(E.THROW);
+                }
+            });
+        });
+    });
 });

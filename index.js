@@ -103,6 +103,35 @@ var allPropertiesExist = function (needles, hayStack) {
 };
 
 /**
+* Test for the presence of properties unspecified properties.
+* @param {String[]} needles
+* @param {Array/Object} collection
+* @return {Boolean}
+*/
+var onlyThesePropsExist = function (needles, hayStack) {
+    var result = true,
+        isArray = hayStack instanceof Array;
+
+    forEach(hayStack, function (value, key) {
+        var isNeedle;
+        
+        if (isArray) {
+            isNeedle = needles.indexOf(value) !== -1;
+        } else {
+            isNeedle = needles.indexOf(key) !== -1;
+        }
+
+        if (!isNeedle) {
+            result = false;
+        }
+
+        return isNeedle;
+    });
+
+    return result;
+};
+
+/**
 * Tests to see if criteria are all in item.
 * @param {*} criteria
 * @throws {Error}
@@ -126,30 +155,20 @@ Question.prototype.have = function (criteria) {
 
 /**
 * Check for existence of only specified items.
-* @param {*} criterion
+* @param {*} criteria
 */
-Question.prototype.haveOnly = function (criterion) {
-    var criteria = (criterion instanceof Array) ?
-        criterion : [criterion];
-
-    // There are different rules for Arrays and Objects.
+Question.prototype.haveOnly = function (criteria) {
+    
     var isArray = this.item instanceof Array;
+    
+    criteria = (criteria instanceof Array) ?
+        criteria : [criteria];
 
-    var i, max;
-
-    if (isArray) {
-        for (i = 0, max = this.item.length; i < max; i++) {
-            if (criteria.indexOf(this.item[i]) === -1) {
-                err(E.ARR_HAS_EXTRA);
-            }
-        }
-    } else {
-        for (i in this.item) {
-            if (this.item.hasOwnProperty(i)) {
-                if (criteria.indexOf(i) === -1) {
-                    err(E.OBJ_HAS_EXTRA);
-                }
-            }
+    if (this.isFalse(onlyThesePropsExist(criteria, this.item))) {
+        if (isArray) {
+            err(E.ARR_HAS_EXTRA);
+        } else {
+            err(E.OBJ_HAS_EXTRA);
         }
     }
 };
