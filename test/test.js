@@ -301,6 +301,30 @@ describe('haveOnly', function () {
     });
 });
 
+describe('haveAny', function () {
+    describe('when checking an Array', function () {
+        it('should not throw if one of the props is found', function () {
+            var threw = mayThrow(function () {
+                will([1, 2, 3]).haveAny([9, 8, 2]);
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+
+        it('should throw if none of the props is found', function () {
+            var threw = mayThrow(function () {
+                will([1, 2, 3]).haveAny([9, 8]);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+});
+
 describe('haveOwn', function () {
     var Foo = function () {};
     Foo.prototype.bar = true;
@@ -578,6 +602,42 @@ describe('not', function () {
                     err(E.THROW);
                 }
             });
+        });
+    });
+
+    describe('haveOwn', function () {
+        var Foo = function () {};
+        Foo.prototype.bar = true;
+
+        var foo;
+
+        beforeEach(function () {
+            foo = new Foo();
+            foo.baz = true;
+        });
+
+        afterEach(function () {
+            foo = undefined;
+        });
+
+        it('should throw if tested item has its own member', function () {
+            var threw = mayThrow(function () {
+                will(foo).not.haveOwn('baz');
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if tested item does not have its own member', function () {
+            var threw = mayThrow(function () {
+                will(foo).not.haveOwn('bar');
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
         });
     });
 });

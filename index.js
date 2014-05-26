@@ -7,9 +7,9 @@ var E = {
     NOT_IN_ARR: 'not in Array',
     NOT_EQL: 'not equal',
     NOT_ST_EQL: 'not strictly equal',
-    NOT_IN_OBJ: 'member not in object',
+    NOT_IN_OBJ: 'property not in object',
     HAS_OWN: 'does not have own property',
-    ARR_HAS_EXTRA: 'has more properties than expected',
+    ARR_HAS_EXTRA: 'has more items than expected',
     OBJ_HAS_EXTRA: 'has more properties than expected'
 };
 
@@ -71,7 +71,7 @@ var forEach = function (item, fn) {
 
 /**
 * Test for the presence of properties in an Object or Array.
-* @param {String[]} needles
+* @param {Array} needles
 * @param {Array/Object} collection
 * @param {Boolean} all Only return true if all needles are found.
 * @return {Boolean}
@@ -100,6 +100,30 @@ var propertiesExist = function (needles, hayStack, all) {
 
 var allPropertiesExist = function (needles, hayStack) {
     return propertiesExist(needles, hayStack, true);
+};
+
+/**
+* Test for the presence at least one property in an Object or Array.
+* @param {Array} needles
+* @param {Array/Object} collection
+* @return {Boolean}
+*/
+var anyPropExists = function (needles, hayStack) {
+    var result = false,
+        isArray = hayStack instanceof Array;
+
+    forEach(needles, function (value, key) {
+
+        if (isArray) {
+            result = hayStack.indexOf(value) !== -1;
+        } else {
+            result = hayStack[value] !== undefined;
+        }
+
+        return !result;
+    });
+
+    return result;
 };
 
 /**
@@ -174,11 +198,24 @@ Question.prototype.haveOnly = function (criteria) {
 };
 
 /**
+* Check for existence of any properties in item.
+* @param {String/String[]} props
+*/
+Question.prototype.haveAny = function (props) {
+    var isArray = this.item instanceof Array;
+    props = props instanceof Array ? props : [props];
+
+    if (this.isFalse(anyPropExists(props, this.item))) {
+        err(E[isArray ? 'NOT_IN_ARR' : 'NOT_IN_OBJ']);
+    }
+};
+
+/**
 * Checks for own properties.
 * @param {String} property
 */
 Question.prototype.haveOwn = function (property) {
-    if (!this.item.hasOwnProperty(property)) {
+    if (this.isFalse(this.item.hasOwnProperty(property))) {
         err(E.HAS_OWN);
     }
 };
@@ -248,5 +285,3 @@ var will = function (interrogated) {
 };
 
 exports.will = will;
-
-

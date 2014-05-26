@@ -42,6 +42,9 @@ describe('some test suite', function () {
         will([3]).haveOnly(3);
         will([1, 2, 3]).haveOnly([1, 2, 3]);
 
+        // at least one item in an Array
+        will([1, 2, 3]).haveAny([99, 66, 2]);
+
         // item in an Object (any object)
         will({foo: true}).have('foo');
         will({ foo: true, bar: true }).have(['foo', 'bar']);
