@@ -45,13 +45,16 @@ describe('some test suite', function () {
         // at least one item in an Array
         will([1, 2, 3]).haveAny([99, 66, 2]);
 
-        // item in an Object (any object)
+        // property in an Object (any object)
         will({foo: true}).have('foo');
         will({ foo: true, bar: true }).have(['foo', 'bar']);
 
-        // only specific items in an Object
+        // only specific properties in an Object
         will({ foo: 1 }).haveOnly('foo');
         will({ foo: 1, bar: 1 }).haveOnly(['foo', 'bar']);
+
+        // at least one property in an Array
+        will({ foo: 1 }).haveAny(['foo', 'bar', 'baz']);
 
         // own properties
         will(foo).haveOwn('baz');

@@ -323,6 +323,29 @@ describe('haveAny', function () {
             }
         });
     });
+
+
+    describe.only('when checking an Object', function () {
+        it('should not throw if one of the props is found', function () {
+            var threw = mayThrow(function () {
+                will({ foo: 1 }).haveAny(['foo', 'bar', 'baz']);
+            });
+
+            if (threw) {
+                err(E.THROW);
+            }
+        });
+
+        it('should throw if one of the props is found', function () {
+            var threw = mayThrow(function () {
+                will({ foo: 1 }).haveAny(['bar', 'baz']);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
 });
 
 describe('haveOwn', function () {
