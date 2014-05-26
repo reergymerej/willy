@@ -26,6 +26,16 @@ var mayThrow = function (fn) {
     return threw;
 };
 
+var ThrowAttempt = function (fn) {
+    this.threw = false;
+    try {
+        fn();
+    } catch (e) {
+        this.error = e;
+        this.threw = true;
+    }
+};
+
 describe('will', function () {
     it('should return an Object', function () {
         if (!(will() instanceof Object)) {
@@ -759,8 +769,96 @@ describe('not', function () {
     });
 });
 
-// describe('addTest', function () {
-//     it('should exist', function () {
-//         will(willy.addTest).beLike(true);
-//     });
-// });
+describe('addTest', function () {
+    before(function () {
+        willy.addTest(function equal99() {
+            if (this.isFalse(this.item === 99)) {
+                this.raise('equal 99');
+            }
+        });
+    });
+
+    after(function () {
+        delete will().constructor.prototype.equal99;
+    });
+    
+    it('should augment the available tests', function () {
+        will(99).equal99();
+    });
+
+    it('should look like any other test when throwing', function () {
+        var threw = mayThrow(function () {
+            will(98).equal99();
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should work with not', function () {
+        var threw = mayThrow(function () {
+            will(98).not.equal99();
+        });
+
+        if (threw) {
+            err(E.THROW);
+        }
+    });
+
+    describe('when the fn has arguments', function () {
+        before(function () {
+            willy.addTest(function beLessThan(x) {
+                if (this.isFalse(this.item < x)) {
+                    this.raise('be less than', x);
+                }
+            });
+        });
+
+        after(function () {
+            delete will().constructor.prototype.equal99;
+        });
+
+        it('should work when not throwing', function () {
+            try {
+                will(1).beLessThan(2);
+            } catch (e) {
+                err(E.THROW);
+            }
+        });
+
+        it('should work when throwing', function () {
+            var throwAttempt = new ThrowAttempt(function () {
+                will(2).beLessThan(2);
+            });
+
+            if (!throwAttempt.error) {
+                err(E.NO_THROW);   
+            }
+        });
+
+        describe('raised messages should make sense', function () {
+            it('should throw a message that makes sense', function () {
+                var throwAttempt = new ThrowAttempt(function () {
+                    will(2).beLessThan(2);
+                });
+
+                if (throwAttempt.error.message !==
+                    'expected 2 to be less than 2') {
+                    err('wrong message');
+                }
+            });
+
+            it('should throw a message that makes sense when using not', function () {
+                var throwAttempt = new ThrowAttempt(function () {
+                    will(1).not.beLessThan(2);
+                });
+
+                if (throwAttempt.error.message !==
+                    'expected 1 not to be less than 2') {
+                    err('wrong message');
+                }
+            });
+        });
+    });
+});

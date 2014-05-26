@@ -286,6 +286,20 @@ Question.prototype.isFalse = function (expression) {
 };
 
 /**
+* Raise an error, inserting the item in question and correct
+* "truth" based on if Question has been negated.
+* @param {String} comparison text version of comparison
+* @param {*} values values item was tested against
+*/
+Question.prototype.raise = function (comparison, values) {
+    var msg = 'expected ' + this.item +
+         (this.negative ? ' not' : '') + ' to ' +
+         comparison + ' ' + values;
+
+    throw new Error(msg);
+};
+
+/**
 * @param {Array} interrogated
 * @return {Question}
 */
@@ -293,4 +307,13 @@ var will = function (interrogated) {
     return new Question(interrogated);
 };
 
+/**
+* Add a new test to the Question prototype.
+* @param {Function} a named function
+*/
+var addTest = function (fn) {
+    Question.prototype[fn.name] = fn;
+};
+
 exports.will = will;
+exports.addTest = addTest;

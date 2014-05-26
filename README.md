@@ -19,6 +19,7 @@ describe('some test suite', function () {
 
 ### Index
 
+**Tests**
 * be
 * beA/beAn
 * beLike
@@ -30,7 +31,12 @@ describe('some test suite', function () {
 * not
 * throw
 
-#### be 
+**Utilities**
+* addTest
+
+#### Tests
+
+##### be 
 checks for identity (===)
 
 ```js
@@ -41,7 +47,7 @@ will(3).be(3);
 will('3').be(3);
 ```
 
-#### beA/beAn
+##### beA/beAn
 checks for inheritance (instanceof) *- These are synonyms.*
 
 ```js
@@ -53,7 +59,7 @@ will([]).beAn(Array);
 will('').beA(Number);
 ```
 
-#### beLike
+##### beLike
 checks for equality (==)
 
 ```js
@@ -64,7 +70,7 @@ will('').beLike(false);
 will('false').beLike(false);
 ```
 
-#### exist
+##### exist
 checks existence
 
 ```js
@@ -77,7 +83,7 @@ will(foo.bar).exist();
 will(foo.baz).exist();
 ```
 
-#### have
+##### have
 checks for items/properties in an Array/Object *- All must be present.*
 
 ```js
@@ -94,7 +100,7 @@ will({ foo: 1, bar: 1 }).have('baz');
 will({ foo: 1, bar: 1 }).have(['foo', 'baz']);
 ```
 
-#### haveAny
+##### haveAny
 checks for the existence of one item/property in an Array/Object
 
 ```js
@@ -111,7 +117,7 @@ will({ foo: 1, bar: 1 }).haveAny('baz');
 will({ foo: 1, bar: 1 }).haveAny(['baz', 'quux']);
 ```
 
-#### haveOnly
+##### haveOnly
 checks Array/Object for unexpected items/properties
 
 ```js
@@ -128,7 +134,7 @@ will({ foo: 1, bar: 1 }).haveOnly('baz');
 will({ foo: 1, bar: 1, baz: 1 }).haveOnly(['foo', 'bar']);
 ```
 
-#### haveOwn
+##### haveOwn
 checks for own properties (hasOwnProperty)
 
 ```js
@@ -145,7 +151,7 @@ will(foo).haveOwn('bar');
 will(foo).haveOwn('baz');
 ```
 
-#### not
+##### not
 negates the logic of any assertion
 
 ```js
@@ -158,7 +164,7 @@ will('foo').not.be('foo');
 will([1]).not.haveOnly(1);
 ```
 
-#### throw
+##### throw
 checks for errors being thrown
 
 ```js
@@ -173,4 +179,37 @@ will(bad).throw();
 
 // fail
 will(good).throw();
+```
+
+#### Utilities
+
+##### addTest
+add your own test to Willy
+
+Add custom tests by passing a **named** function to `willy.addTest`.
+
+* Get the value that is being tested with `this.item`.
+* Test *truth* (with respect for the `not` prefix) with `this.isTrue` and `this.isFalse`.
+* Throw an error when your criteria is not met with `this.raise`.  `raise` takes two parameters:
+    * a string explaining what you were testing
+    * the values you were testing against
+
+```js
+var willy = require('willy'),
+    will = willy.will;
+
+willy.addTest(function beLessThan(x) {
+
+    if (this.isFalse(this.item < x)) {
+        this.raise('be less than', x);
+    }
+});
+
+// passes
+will(1).beLessThan(2);
+
+// fails
+will(2).beLessThan(2); // 'expected 2 to be less than 2'
+will(1).not.beLessThan(2); // 'expected 1 not to be less than 2'
+
 ```
