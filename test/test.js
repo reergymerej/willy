@@ -324,8 +324,7 @@ describe('haveAny', function () {
         });
     });
 
-
-    describe.only('when checking an Object', function () {
+    describe('when checking an Object', function () {
         it('should not throw if one of the props is found', function () {
             var threw = mayThrow(function () {
                 will({ foo: 1 }).haveAny(['foo', 'bar', 'baz']);
@@ -619,6 +618,52 @@ describe('not', function () {
                         bar: 1,
                         baz: 1
                     }).not.haveOnly(['foo', 'bar']);
+                });
+
+                if (threw) {
+                    err(E.THROW);
+                }
+            });
+        });
+    });
+
+    describe('haveAny', function () {
+        describe('when checking an Array', function () {
+            it('should throw if one of the props is found', function () {
+                var threw = mayThrow(function () {
+                    will([1, 2, 3]).not.haveAny([9, 8, 2]);
+                });
+
+                if (!threw) {
+                    err(E.NO_THROW);
+                }
+            });
+
+            it('should not throw if none of the props is found', function () {
+                var threw = mayThrow(function () {
+                    will([1, 2, 3]).not.haveAny([9, 8]);
+                });
+
+                if (threw) {
+                    err(E.THROW);
+                }
+            });
+        });
+
+        describe('when checking an Object', function () {
+            it('should throw if one of the props is found', function () {
+                var threw = mayThrow(function () {
+                    will({ foo: 1 }).not.haveAny(['foo', 'bar', 'baz']);
+                });
+
+                if (!threw) {
+                    err(E.NO_THROW);
+                }
+            });
+
+            it('should not throw if one of the props is found', function () {
+                var threw = mayThrow(function () {
+                    will({ foo: 1 }).not.haveAny(['bar', 'baz']);
                 });
 
                 if (threw) {
