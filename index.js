@@ -1,20 +1,18 @@
 'use strict';
 
 var E = {
-    UNDEF: 'not defined',
-    INST: 'not instanceof',
-    NO_THROW: 'did not throw error',
-    NOT_IN_ARR: 'not in Array',
-    NOT_EQL: 'not equal',
-    NOT_ST_EQL: 'not strictly equal',
-    NOT_IN_OBJ: 'property not in object',
-    HAS_OWN: 'does not have own property',
-    ARR_HAS_EXTRA: 'has more items than expected',
-    OBJ_HAS_EXTRA: 'has more properties than expected'
-};
-
-var err = function (msg) {
-    throw new Error(msg);
+    UNDEF: 'exist',
+    INST: 'be an instance of',
+    THROW: 'throw an error',
+    NOT_IN_ARR: 'have all of these items:',
+    EQ: 'be like',
+    STRICT_EQ: 'strictly equal',
+    NOT_IN_OBJ: 'have all of these properties:',
+    HAVE_OWN: 'have own',
+    HAVE_ANY_OBJ: 'have any of these properties:',
+    HAVE_ANY_ARR: 'have any of these items:',
+    ARR_HAS_EXTRA: 'have only these items:',
+    OBJ_HAS_EXTRA: 'have only these properties:'
 };
 
 /**
@@ -170,9 +168,9 @@ Question.prototype.have = function (criteria) {
 
     if (this.isFalse(allPropertiesExist(criteria, this.item))) {
         if (isArray) {
-            err(E.NOT_IN_ARR);
+            this.raise(E.NOT_IN_ARR, criteria);
         } else {
-            err(E.NOT_IN_OBJ);
+            this.raise(E.NOT_IN_OBJ, criteria);
         }
     }
 };
@@ -190,9 +188,9 @@ Question.prototype.haveOnly = function (criteria) {
 
     if (this.isFalse(onlyThesePropsExist(criteria, this.item))) {
         if (isArray) {
-            err(E.ARR_HAS_EXTRA);
+            this.raise(E.ARR_HAS_EXTRA, criteria);
         } else {
-            err(E.OBJ_HAS_EXTRA);
+            this.raise(E.OBJ_HAS_EXTRA, criteria);
         }
     }
 };
@@ -206,7 +204,7 @@ Question.prototype.haveAny = function (props) {
     props = props instanceof Array ? props : [props];
 
     if (this.isFalse(anyPropExists(props, this.item))) {
-        err(E[isArray ? 'NOT_IN_ARR' : 'NOT_IN_OBJ']);
+        this.raise(E[isArray ? 'HAVE_ANY_ARR' : 'HAVE_ANY_OBJ'], props);
     }
 };
 
@@ -216,7 +214,7 @@ Question.prototype.haveAny = function (props) {
 */
 Question.prototype.haveOwn = function (property) {
     if (this.isFalse(this.item.hasOwnProperty(property))) {
-        err(E.HAS_OWN);
+        this.raise(E.HAVE_OWN, property);
     }
 };
 
@@ -226,7 +224,7 @@ Question.prototype.haveOwn = function (property) {
 */
 Question.prototype.be = function (criterion) {
     if (this.isFalse(this.item === criterion)) {
-        err(E.NOT_ST_EQL);
+        this.raise(E.STRICT_EQ, criterion);
     }
 };
 
@@ -235,8 +233,8 @@ Question.prototype.be = function (criterion) {
 * @param {*} criterion
 */
 Question.prototype.beLike = function (criterion) {
-    if (!this.isTrue(this.item == criterion)) {
-        err(E.NOT_EQL);
+    if (this.isFalse(this.item == criterion)) {
+        this.raise(E.EQ, criterion);
     }
 };
 
@@ -244,9 +242,8 @@ Question.prototype.beLike = function (criterion) {
 * Throw if the item in Question does not throw.
 */
 Question.prototype.throw = function () {
-    var threw = mayThrow(this.item);
-    if (!this.isTrue(threw)) {
-        err(E.NO_THROW);
+    if (this.isFalse(mayThrow(this.item))) {
+        this.raise(E.THROW);
     }
 };
 
@@ -257,8 +254,8 @@ Question.prototype.throw = function () {
 Question.prototype.beA = 
     Question.prototype.beAn = function (criterion) {
 
-    if (!this.isTrue(this.item instanceof criterion)) {
-        err(E.INST);
+    if (this.isFalse(this.item instanceof criterion)) {
+        this.raise(E.INST, criterion.name);
     }
 };
 
@@ -267,7 +264,7 @@ Question.prototype.beA =
 */
 Question.prototype.exist = function () {
     if (this.isTrue(this.item === undefined)) {
-        err(E.UNDEF);
+        this.raise(E.UNDEF);
     }
 };
 
@@ -292,9 +289,13 @@ Question.prototype.isFalse = function (expression) {
 * @param {*} values values item was tested against
 */
 Question.prototype.raise = function (comparison, values) {
-    var msg = 'expected ' + this.item +
-         (this.negative ? ' not' : '') + ' to ' +
-         comparison + ' ' + values;
+    var msg = 'expected <' + this.item + '>' +
+        (this.negative ? ' not' : '') + ' to ' +
+        comparison;
+
+    if (values !== undefined) {
+        msg += ' <' + values + '>';
+    }
 
     throw new Error(msg);
 };
