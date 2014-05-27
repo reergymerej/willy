@@ -844,7 +844,7 @@ describe('addTest', function () {
                 });
 
                 if (throwAttempt.error.message !==
-                    'expected 2 to be less than 2') {
+                    'expected <2> to be less than <2>') {
                     err('wrong message');
                 }
             });
@@ -855,7 +855,7 @@ describe('addTest', function () {
                 });
 
                 if (throwAttempt.error.message !==
-                    'expected 1 not to be less than 2') {
+                    'expected <1> not to be less than <2>') {
                     err('wrong message');
                 }
             });
@@ -863,7 +863,7 @@ describe('addTest', function () {
     });
 });
 
-describe.only('error messages', function () {
+describe('error messages', function () {
     it('should make sense for be', function () {
         var msg = new ThrowAttempt(function () {
             will(false).be(true);
@@ -930,19 +930,35 @@ describe.only('error messages', function () {
         will(msg).be('expected <1> not to exist');
     });
 
-    it('should make sense for have', function () {
+    it('should make sense for have (Array)', function () {
         var msg = new ThrowAttempt(function () {
             will([1, 2]).have([1, 2, 3]);
         }).error.message;
 
-        will(msg).be('expected <1,2> to have all of these: <1,2,3>');
+        will(msg).be('expected <1,2> to have all of these items: <1,2,3>');
     });
 
-    it('should make sense for not.have', function () {
+    it('should make sense for not.have (Array)', function () {
         var msg = new ThrowAttempt(function () {
             will([1, 2, 3]).not.have([1, 2, 3]);
         }).error.message;
 
-        will(msg).be('expected <1,2,3> not to have all of these: <1,2,3>');
+        will(msg).be('expected <1,2,3> not to have all of these items: <1,2,3>');
+    });
+
+    it('should make sense for have (Object)', function () {
+        var msg = new ThrowAttempt(function () {
+            will({ foo: 1 }).have(['foo', 'bar']);
+        }).error.message;
+
+        will(msg).be('expected <[object Object]> to have all of these properties: <foo,bar>');
+    });
+
+    it('should make sense for haveOnly', function () {
+        var msg = new ThrowAttempt(function () {
+            will([1, 2]).haveOnly(1);
+        }).error.message;
+
+        will(msg).be('expected <1,2> to have only these items: <1>');
     });
 });
