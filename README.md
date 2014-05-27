@@ -1,4 +1,4 @@
-# Willy (v0.2.0)
+# Willy
 
 Willy is an assertion library designed to be simple and readable.  It doesn't follow the normal BDD/TDD assertion styles, but reads more like questions.
 
