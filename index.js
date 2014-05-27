@@ -1,11 +1,11 @@
 'use strict';
 
 var E = {
-    UNDEF: 'not defined',
+    UNDEF: 'exist',
     INST: 'be an instance of',
     NO_THROW: 'did not throw error',
-    NOT_IN_ARR: 'not in Array',
-    NOT_EQL: 'not equal',
+    NOT_IN_ARR: 'have all of these:',
+    EQ: 'be like',
     STRICT_EQ: 'strictly equal',
     NOT_IN_OBJ: 'property not in object',
     HAS_OWN: 'does not have own property',
@@ -170,7 +170,7 @@ Question.prototype.have = function (criteria) {
 
     if (this.isFalse(allPropertiesExist(criteria, this.item))) {
         if (isArray) {
-            err(E.NOT_IN_ARR);
+            this.raise(E.NOT_IN_ARR, criteria);
         } else {
             err(E.NOT_IN_OBJ);
         }
@@ -235,8 +235,8 @@ Question.prototype.be = function (criterion) {
 * @param {*} criterion
 */
 Question.prototype.beLike = function (criterion) {
-    if (!this.isTrue(this.item == criterion)) {
-        err(E.NOT_EQL);
+    if (this.isFalse(this.item == criterion)) {
+        this.raise(E.EQ, criterion);
     }
 };
 
@@ -267,7 +267,7 @@ Question.prototype.beA =
 */
 Question.prototype.exist = function () {
     if (this.isTrue(this.item === undefined)) {
-        err(E.UNDEF);
+        this.raise(E.UNDEF);
     }
 };
 
@@ -292,9 +292,13 @@ Question.prototype.isFalse = function (expression) {
 * @param {*} values values item was tested against
 */
 Question.prototype.raise = function (comparison, values) {
-    var msg = 'expected ' + this.item +
-         (this.negative ? ' not' : '') + ' to ' +
-         comparison + ' ' + values;
+    var msg = 'expected <' + this.item + '>' +
+        (this.negative ? ' not' : '') + ' to ' +
+        comparison;
+
+    if (values !== undefined) {
+        msg += ' <' + values + '>';
+    }
 
     throw new Error(msg);
 };
