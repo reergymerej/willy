@@ -2,11 +2,11 @@
 
 var E = {
     UNDEF: 'not defined',
-    INST: 'not instanceof',
+    INST: 'be an instance of',
     NO_THROW: 'did not throw error',
     NOT_IN_ARR: 'not in Array',
     NOT_EQL: 'not equal',
-    NOT_ST_EQL: 'not strictly equal',
+    STRICT_EQ: 'strictly equal',
     NOT_IN_OBJ: 'property not in object',
     HAS_OWN: 'does not have own property',
     ARR_HAS_EXTRA: 'has more items than expected',
@@ -226,7 +226,7 @@ Question.prototype.haveOwn = function (property) {
 */
 Question.prototype.be = function (criterion) {
     if (this.isFalse(this.item === criterion)) {
-        err(E.NOT_ST_EQL);
+        this.raise(E.STRICT_EQ, criterion);
     }
 };
 
@@ -258,7 +258,7 @@ Question.prototype.beA =
     Question.prototype.beAn = function (criterion) {
 
     if (!this.isTrue(this.item instanceof criterion)) {
-        err(E.INST);
+        this.raise(E.INST, criterion.name);
     }
 };
 

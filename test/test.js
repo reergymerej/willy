@@ -862,3 +862,37 @@ describe('addTest', function () {
         });
     });
 });
+
+describe.only('error messages', function () {
+    it('should make sense for be', function () {
+        var msg = new ThrowAttempt(function () {
+            will(false).be(true);
+        }).error.message;
+
+        will(msg).be('expected false to strictly equal true');
+    });
+
+    it('should make sense for not.be', function () {
+        var msg = new ThrowAttempt(function () {
+            will(false).not.be(false);
+        }).error.message;
+
+        will(msg).be('expected false not to strictly equal false');
+    });
+
+    it('should make sense for beA/beAn', function () {
+        var msg = new ThrowAttempt(function () {
+            will('foo').beAn(Array);
+        }).error.message;
+
+        will(msg).be('expected foo to be an instance of Array');
+    });
+
+    it('should make sense for not.beA/beAn', function () {
+        var msg = new ThrowAttempt(function () {
+            will(['foo']).not.beAn(Array);
+        }).error.message;
+
+        will(msg).be('expected ' + ['foo'] + ' not to be an instance of Array');
+    });
+});
