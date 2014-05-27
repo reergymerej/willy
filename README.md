@@ -209,7 +209,7 @@ willy.addTest(function beLessThan(x) {
 will(1).beLessThan(2);
 
 // fails
-will(2).beLessThan(2); // 'expected 2 to be less than 2'
-will(1).not.beLessThan(2); // 'expected 1 not to be less than 2'
+will(2).beLessThan(2); // 'expected <2> to be less than <2>'
+will(1).not.beLessThan(2); // 'expected <1> not to be less than <2>'
 
 ```
