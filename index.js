@@ -1,4 +1,5 @@
 'use strict';
+var Q = require('q');
 
 var E = {
     UNDEF: 'exist',
@@ -32,12 +33,20 @@ var mayThrow = function (fn) {
 /**
 * @cfg {*} item The item to be interrogated (item in Question, get it?).
 * @cfg {Boolean} negative
+* @cfg {Boolean} eventual
 */
-var Question = function (item, negative) {
+var Question = function (item, negative, eventual) {
     this.item = item;
+
+    // TODO Making every permutation is dumb.  Be smarter.
+    this.eventual = !!eventual;
+    if (!this.eventual) {
+        this.eventually = new Question(item, negative, true);
+    }
+
     this.negative = !!negative;
     if (!this.negative) {
-        this.not = new Question(item, true);
+        this.not = new Question(item, true, eventual);
     }
 };
 
@@ -221,10 +230,23 @@ Question.prototype.haveOwn = function (property) {
 /**
 * Throws error based on identity comparison.
 * @param {*} criterion
+* @return {Promise}
 */
 Question.prototype.be = function (criterion) {
-    if (this.isFalse(this.item === criterion)) {
-        this.raise(E.STRICT_EQ, criterion);
+    var that = this;
+
+    if (this.eventual) {
+        return Q.Promise(function (resolve, reject, notify) {
+            if (that.isTrue(that.item === criterion)) {
+                resolve();
+            } else {
+                reject(that.getError(E.STRICT_EQ, criterion));
+            }
+        });
+    } else {
+        if (this.isFalse(this.item === criterion)) {
+            this.raise(E.STRICT_EQ, criterion);
+        }
     }
 };
 
@@ -289,6 +311,16 @@ Question.prototype.isFalse = function (expression) {
 * @param {*} values values item was tested against
 */
 Question.prototype.raise = function (comparison, values) {
+    throw this.getError(comparison, values);
+};
+
+/**
+* Get a formatted string for an error.
+* @param {String} comparison text version of comparison
+* @param {*} values item was tested against
+* @return {String}
+*/
+Question.prototype.getErrorMessage = function (comparison, values) {
     var msg = 'expected <' + this.item + '>' +
         (this.negative ? ' not' : '') + ' to ' +
         comparison;
@@ -297,7 +329,16 @@ Question.prototype.raise = function (comparison, values) {
         msg += ' <' + values + '>';
     }
 
-    throw new Error(msg);
+    return msg;
+};
+
+/**
+* @param {String} comparison text version of comparison
+* @param {*} values item was tested against
+* @return {Error}
+*/
+Question.prototype.getError = function (comparison, values) {
+    return new Error(this.getErrorMessage(comparison, values));
 };
 
 /**

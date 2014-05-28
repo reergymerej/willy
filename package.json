@@ -14,7 +14,12 @@
     "url": "https://github.com/reergymerej/willy.git"
   },
   "keywords": [
-    "assertion library", "assertion", "assert", "bdd", "tdd", "natural"
+    "assertion library",
+    "assertion",
+    "assert",
+    "bdd",
+    "tdd",
+    "natural"
   ],
   "author": "Jeremy Greer <jeremy.greer.atl@gmail.com> (http://jeremygreer.herokuapp.com/)",
   "license": "ISC",
@@ -23,6 +28,7 @@
   },
   "homepage": "https://github.com/reergymerej/willy",
   "devDependencies": {
-    "mocha": "~1.19.0"
+    "mocha": "~1.19.0",
+    "q": "~1.0.1"
   }
 }
