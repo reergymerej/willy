@@ -36,6 +36,7 @@ var mayThrow = function (fn) {
 * @cfg {Boolean} eventual
 */
 var Question = function (item, negative, eventual) {
+
     this.item = item;
 
     // TODO Making every permutation is dumb.  Be smarter.
@@ -224,8 +225,12 @@ Question.prototype.haveOwn = function (property) {
 * @return {Promise}
 */
 Question.prototype.be = function (criterion) {
-    return this.if(this.item !== criterion,
-        E.STRICT_EQ, criterion);
+    // return this.if(this.item !== criterion,
+    //     E.STRICT_EQ, criterion);
+
+    return this.if(function (value) {
+            return value === criterion;
+        }, E.STRICT_EQ, criterion);
 };
 
 /**
@@ -302,24 +307,35 @@ Question.prototype.getError = function (comparison, values) {
 
 /**
 * Run the test and throw or return a promise.
-* @param {Expression} failureExp
+* @param {Function} testCallback
 * @param {String} message
 * @param {*} criteria
 */
-Question.prototype.if = function (failureExp, message, criteria) {
+Question.prototype.if = function (testCallback, message, criteria) {
     var that = this;
-    failureExp = this.isTrue(failureExp);
 
     if (this.eventual) {
-        return Q.Promise(function (resolve, reject, notify) {
-            if (failureExp) {
-                reject(that.getError(message, criteria));
-            } else {
-                resolve();
+
+        return this.item.then(function (value) {
+
+            if (!that.isTrue(testCallback(value))) {
+                throw that.getError(message, criteria);
             }
+
+        }, function (err) {
+            console.log('an error', err);
+            throw that.getError(message, criteria);
         });
+
+        // return Q.Promise(function (resolve, reject, notify) {
+        //     if (testCallback) {
+        //         reject(that.getError(message, criteria));
+        //     } else {
+        //         resolve();
+        //     }
+        // });
     } else {
-        if (failureExp) {
+        if (testCallback) {
             throw this.getError(message, criteria);
         }
     }
@@ -331,6 +347,11 @@ Question.prototype.if = function (failureExp, message, criteria) {
 */
 var will = function (interrogated) {
     return new Question(interrogated);
+};
+
+var isPromise = function (x) {
+    return !!(x.constructor.prototype.catch &&
+            x.constructor.prototype.then);
 };
 
 /**

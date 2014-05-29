@@ -1016,4 +1016,28 @@ describe('working with promises', function () {
             });
         });
     });
+
+    // it.only('should work aync', function () {
+    //     var promise = Q.Promise(function (resolve, reject) {
+    //         setTimeout(function () {
+    //             console.log('ready');
+    //             resolve(123);
+    //         }, 300);
+    //     });
+
+    //     return will(promise).eventually.be(1234);
+    // });
+
+    it.only('should work aync', function () {
+        var promise = Q.Promise(function (resolve, reject) {
+            setTimeout(function () {
+                console.log('ready');
+                resolve(1234);
+                // reject(new Error('promise broke'));
+                // throw new Error('promise broke');
+            }, 300);
+        });
+
+        return will(promise).eventually.be(123);
+    });
 });
