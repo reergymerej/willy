@@ -200,10 +200,9 @@ add your own test to Willy
 
 Add custom tests by passing a **named** function to `willy.addTest`.
 
-* Get the value that is being tested with `this.item`.
 * Return the result of `this.if` so Willy can automatically handle
 * `not` and `eventually` for you.  `if` takes 3 arguments:
-    * an expression that indicates failure
+    * a function passed the value being tested
     * a string explaining what you were testing
     * the value tested (optional)
 
@@ -211,12 +210,23 @@ Add custom tests by passing a **named** function to `willy.addTest`.
 var willy = require('willy'),
     will = willy.will;
 
-willy.addTest(function beLessThan(x) {
-    return this.if(this.item >= x,
-        'be less than', x);
+willy.addTest(function beLessThan(expectedValue) {
+    return this.if(
 
-    return this.if(this.item >= x,
-        'be less than', x);
+        // a function passed the value being tested
+        function (actualValue) {
+
+            // return the result of your test expression
+            return actualValue < expectedValue;
+
+        },
+
+        // a string explaining what you were testing
+        'be less than',
+
+        // the value tested (optional)
+        expectedValue
+    );
 });
 
 // passes
@@ -226,7 +236,7 @@ will(1).beLessThan(2);
 will(2).beLessThan(2); // 'expected <2> to be less than <2>'
 will(1).not.beLessThan(2); // 'expected <1> not to be less than <2>'
 
-// fails with promise (Mocha example)
+// fails as a promise
 describe('some test suite', function () {
     it('should be less than 2', function () {
         return will(2).eventually.beLessThan(2);
