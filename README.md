@@ -23,6 +23,7 @@ describe('some test suite', function () {
 * be
 * beA/beAn
 * beLike
+* eventually
 * exist
 * have
 * haveAny
@@ -68,6 +69,17 @@ will('').beLike(false);
 
 // fail
 will('false').beLike(false);
+```
+
+##### eventually
+returns a promise rather than raising an error
+
+```js
+describe('some test suite', function () {
+    it('should be less than 2', function () {
+        return will(2).eventually.beLessThan(2);
+    });
+});
 ```
 
 ##### exist
@@ -188,21 +200,33 @@ add your own test to Willy
 
 Add custom tests by passing a **named** function to `willy.addTest`.
 
-* Get the value that is being tested with `this.item`.
-* Test *truth* (with respect for the `not` prefix) with `this.isTrue` and `this.isFalse`.
-* Throw an error when your criteria is not met with `this.raise`.  `raise` takes two parameters:
+* Return the result of `this.if` so Willy can automatically handle
+* `not` and `eventually` for you.  `if` takes 3 arguments:
+    * a function passed the value being tested
     * a string explaining what you were testing
-    * the values you were testing against
+    * the value tested (optional)
 
 ```js
 var willy = require('willy'),
     will = willy.will;
 
-willy.addTest(function beLessThan(x) {
+willy.addTest(function beLessThan(expectedValue) {
+    return this.if(
 
-    if (this.isFalse(this.item < x)) {
-        this.raise('be less than', x);
-    }
+        // a function passed the value being tested
+        function (actualValue) {
+
+            // return the result of your test expression
+            return actualValue < expectedValue;
+
+        },
+
+        // a string explaining what you were testing
+        'be less than',
+
+        // the value tested (optional)
+        expectedValue
+    );
 });
 
 // passes
@@ -212,4 +236,10 @@ will(1).beLessThan(2);
 will(2).beLessThan(2); // 'expected <2> to be less than <2>'
 will(1).not.beLessThan(2); // 'expected <1> not to be less than <2>'
 
+// fails as a promise
+describe('some test suite', function () {
+    it('should be less than 2', function () {
+        return will(2).eventually.beLessThan(2);
+    });
+});
 ```
