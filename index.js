@@ -170,14 +170,15 @@ var onlyThesePropsExist = function (needles, hayStack) {
 */
 Question.prototype.have = function (criteria) {
 
-    var isArray = this.item instanceof Array;
-    var message = isArray ? E.NOT_IN_ARR : E.NOT_IN_OBJ;
+    // var isArray = this.item instanceof Array;
+    // var message = isArray ? E.NOT_IN_ARR : E.NOT_IN_OBJ;
 
     criteria = (criteria instanceof Array) ?
         criteria : [criteria];
 
-    return this.if(!allPropertiesExist(criteria, this.item),
-        message, criteria);
+    return this.if(function (val) {
+        return allPropertiesExist(criteria, val);
+    }, E.NOT_IN_ARR, criteria);
 };
 
 /**
@@ -186,14 +187,15 @@ Question.prototype.have = function (criteria) {
 */
 Question.prototype.haveOnly = function (criteria) {
     
-    var isArray = this.item instanceof Array;
-    var message = isArray ? E.ARR_HAS_EXTRA : E.OBJ_HAS_EXTRA;
+    // var isArray = this.item instanceof Array;
+    // var message = isArray ? E.ARR_HAS_EXTRA : E.OBJ_HAS_EXTRA;
 
     criteria = (criteria instanceof Array) ?
         criteria : [criteria];
 
-    return this.if(!onlyThesePropsExist(criteria, this.item),
-        message, criteria);
+    return this.if(function (val) {
+        return onlyThesePropsExist(criteria, val);
+    }, E.ARR_HAS_EXTRA, criteria);
 };
 
 /**
@@ -201,13 +203,14 @@ Question.prototype.haveOnly = function (criteria) {
 * @param {String/String[]} props
 */
 Question.prototype.haveAny = function (props) {
-    var isArray = this.item instanceof Array;
-    var message = isArray ? E.HAVE_ANY_ARR : E.HAVE_ANY_OBJ;
-    
-    props = props instanceof Array ? props : [props];
+    return this.if(function (val) {
+        // var isArray = val instanceof Array;
+        // var message = isArray ? E.HAVE_ANY_ARR : E.HAVE_ANY_OBJ;
+        
+        props = props instanceof Array ? props : [props];
 
-    return this.if(!anyPropExists(props, this.item),
-        message, props);
+        return anyPropExists(props, val);
+    }, E.HAVE_ANY_ARR, props);
 };
 
 /**
@@ -215,8 +218,9 @@ Question.prototype.haveAny = function (props) {
 * @param {String} property
 */
 Question.prototype.haveOwn = function (property) {
-    return this.if(!this.item.hasOwnProperty(property),
-        E.HAVE_OWN, property);
+    return this.if(function (val) {
+        return val.hasOwnProperty(property);
+    }, E.HAVE_OWN, property);
 };
 
 /**
@@ -225,9 +229,6 @@ Question.prototype.haveOwn = function (property) {
 * @return {Promise}
 */
 Question.prototype.be = function (criterion) {
-    // return this.if(this.item !== criterion,
-    //     E.STRICT_EQ, criterion);
-
     return this.if(function (value) {
             return value === criterion;
         }, E.STRICT_EQ, criterion);
@@ -238,16 +239,18 @@ Question.prototype.be = function (criterion) {
 * @param {*} criterion
 */
 Question.prototype.beLike = function (criterion) {
-    return this.if(this.item != criterion,
-        E.EQ, criterion);
+    return this.if(function (val) {
+        return val == criterion;
+    }, E.EQ, criterion);
 };
 
 /**
 * Throw if the item in Question does not throw.
 */
 Question.prototype.throw = function () {
-    return this.if(!mayThrow(this.item),
-        E.THROW);
+    return this.if(function (val) {
+        return mayThrow(val);
+    }, E.THROW);
 };
 
 /**
@@ -256,16 +259,18 @@ Question.prototype.throw = function () {
 */
 Question.prototype.beA = 
     Question.prototype.beAn = function (criterion) {
-        return this.if(!(this.item instanceof criterion),
-            E.INST, criterion.name);
+        return this.if(function (val) {
+            return val instanceof criterion;
+        }, E.INST, criterion.name);
 };
 
 /**
 * Tests for an undefined item.
 */
 Question.prototype.exist = function () {
-    return this.if(this.item === undefined,
-        E.UNDEF);
+    return this.if(function (val) {
+        return val !== undefined;
+    }, E.UNDEF);
 };
 
 /**
@@ -326,16 +331,8 @@ Question.prototype.if = function (testCallback, message, criteria) {
             console.log('an error', err);
             throw that.getError(message, criteria);
         });
-
-        // return Q.Promise(function (resolve, reject, notify) {
-        //     if (testCallback) {
-        //         reject(that.getError(message, criteria));
-        //     } else {
-        //         resolve();
-        //     }
-        // });
     } else {
-        if (testCallback) {
+        if (!that.isTrue(testCallback(this.item))) {
             throw this.getError(message, criteria);
         }
     }

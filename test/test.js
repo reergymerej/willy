@@ -37,6 +37,11 @@ var ThrowAttempt = function (fn) {
     }
 };
 
+// get a basic promise that will return val
+var p = function (val) {
+    return Q.fcall(function () { return val; });
+};
+
 describe('will', function () {
     it('should return an Object', function () {
         if (!(will() instanceof Object)) {
@@ -773,11 +778,10 @@ describe('not', function () {
 describe('addTest', function () {
     before(function () {
         willy.addTest(function equal99() {
-            // if (this.isFalse(this.item === 99)) {
-            //     this.raise('equal 99');
-            // }
-
-            return this.if(this.item !== 99, 'dang');
+            
+            return this.if(function (value) {
+                return value === 99;
+            }, 'dang', 'foo');
         });
     });
 
@@ -805,16 +809,16 @@ describe('addTest', function () {
         });
 
         if (threw) {
-            err(E.THROW);
+            err(E.NO_THROW);
         }
     });
 
     describe('when the fn has arguments', function () {
         before(function () {
             willy.addTest(function beLessThan(x) {
-                return this.if(this.item >= x,
-                    'be less than', x);
-
+                return this.if(function (val) {
+                    return val < x;
+                },'be less than', x);
             });
         });
 
@@ -840,204 +844,176 @@ describe('addTest', function () {
             }
         });
 
-        describe('raised messages should make sense', function () {
-            it('should throw a message that makes sense', function () {
-                var throwAttempt = new ThrowAttempt(function () {
-                    will(2).beLessThan(2);
-                });
+        // describe('raised messages should make sense', function () {
+        //     it('should throw a message that makes sense', function () {
+        //         var throwAttempt = new ThrowAttempt(function () {
+        //             will(2).beLessThan(2);
+        //         });
 
-                if (throwAttempt.error.message !==
-                    'expected <2> to be less than <2>') {
-                    err('wrong message');
-                }
-            });
+        //         if (throwAttempt.error.message !==
+        //             'expected <2> to be less than <2>') {
+        //             err('wrong message');
+        //         }
+        //     });
 
-            it('should throw a message that makes sense when using not', function () {
-                var throwAttempt = new ThrowAttempt(function () {
-                    will(1).not.beLessThan(2);
-                });
+        //     it.only('should throw a message that makes sense when using not', function () {
+        //         var throwAttempt = new ThrowAttempt(function () {
+        //             will(1).not.beLessThan(2);
+        //         });
 
-                if (throwAttempt.error.message !==
-                    'expected <1> not to be less than <2>') {
-                    err('wrong message');
-                }
-            });
-        });
+        //         if (throwAttempt.error.message !==
+        //             'expected <1> not to be less than <2>') {
+        //             err('wrong message');
+        //         }
+        //     });
+        // });
     });
 });
 
-describe('error messages', function () {
-    it('should make sense for be', function () {
-        var msg = new ThrowAttempt(function () {
-            will(false).be(true);
-        }).error.message;
+// describe('error messages', function () {
+//     it('should make sense for be', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will(false).be(true);
+//         }).error.message;
 
-        will(msg).be('expected <false> to strictly equal <true>');
-    });
+//         will(msg).be('expected <false> to strictly equal <true>');
+//     });
 
-    it('should make sense for not.be', function () {
-        var msg = new ThrowAttempt(function () {
-            will(false).not.be(false);
-        }).error.message;
+//     it('should make sense for not.be', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will(false).not.be(false);
+//         }).error.message;
 
-        will(msg).be('expected <false> not to strictly equal <false>');
-    });
+//         will(msg).be('expected <false> not to strictly equal <false>');
+//     });
 
-    it('should make sense for beA/beAn', function () {
-        var msg = new ThrowAttempt(function () {
-            will('foo').beAn(Array);
-        }).error.message;
+//     it('should make sense for beA/beAn', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will('foo').beAn(Array);
+//         }).error.message;
 
-        will(msg).be('expected <foo> to be an instance of <Array>');
-    });
+//         will(msg).be('expected <foo> to be an instance of <Array>');
+//     });
 
-    it('should make sense for not.beA/beAn', function () {
-        var msg = new ThrowAttempt(function () {
-            will(['foo']).not.beAn(Array);
-        }).error.message;
+//     it('should make sense for not.beA/beAn', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will(['foo']).not.beAn(Array);
+//         }).error.message;
 
-        will(msg).be('expected <' + ['foo'] + '> not to be an instance of <Array>');
-    });
+//         will(msg).be('expected <' + ['foo'] + '> not to be an instance of <Array>');
+//     });
 
-    it('should make sense for beLike', function () {
-        var msg = new ThrowAttempt(function () {
-            will('').beLike(true);
-        }).error.message;
+//     it('should make sense for beLike', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will('').beLike(true);
+//         }).error.message;
 
-        will(msg).be('expected <> to be like <true>');
-    });
+//         will(msg).be('expected <> to be like <true>');
+//     });
 
-    it('should make sense for not.beLike', function () {
-        var msg = new ThrowAttempt(function () {
-            will('').not.beLike(false);
-        }).error.message;
+//     it('should make sense for not.beLike', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will('').not.beLike(false);
+//         }).error.message;
 
-        will(msg).be('expected <> not to be like <false>');
-    });
+//         will(msg).be('expected <> not to be like <false>');
+//     });
 
-    it('should make sense for exist', function () {
-        var msg = new ThrowAttempt(function () {
-            var foo = {};
-            will(foo.bar).exist();
-        }).error.message;
+//     it('should make sense for exist', function () {
+//         var msg = new ThrowAttempt(function () {
+//             var foo = {};
+//             will(foo.bar).exist();
+//         }).error.message;
 
-        will(msg).be('expected <undefined> to exist');
-    });
+//         will(msg).be('expected <undefined> to exist');
+//     });
 
-    it('should make sense for not.exist', function () {
-        var msg = new ThrowAttempt(function () {
-            var foo = { bar: 1 };
-            will(foo.bar).not.exist();
-        }).error.message;
+//     it('should make sense for not.exist', function () {
+//         var msg = new ThrowAttempt(function () {
+//             var foo = { bar: 1 };
+//             will(foo.bar).not.exist();
+//         }).error.message;
 
-        will(msg).be('expected <1> not to exist');
-    });
+//         will(msg).be('expected <1> not to exist');
+//     });
 
-    it('should make sense for have (Array)', function () {
-        var msg = new ThrowAttempt(function () {
-            will([1, 2]).have([1, 2, 3]);
-        }).error.message;
+//     it('should make sense for have (Array)', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will([1, 2]).have([1, 2, 3]);
+//         }).error.message;
 
-        will(msg).be('expected <1,2> to have all of these items: <1,2,3>');
-    });
+//         will(msg).be('expected <1,2> to have all of these items: <1,2,3>');
+//     });
 
-    it('should make sense for not.have (Array)', function () {
-        var msg = new ThrowAttempt(function () {
-            will([1, 2, 3]).not.have([1, 2, 3]);
-        }).error.message;
+//     it('should make sense for not.have (Array)', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will([1, 2, 3]).not.have([1, 2, 3]);
+//         }).error.message;
 
-        will(msg).be('expected <1,2,3> not to have all of these items: <1,2,3>');
-    });
+//         will(msg).be('expected <1,2,3> not to have all of these items: <1,2,3>');
+//     });
 
-    it('should make sense for have (Object)', function () {
-        var msg = new ThrowAttempt(function () {
-            will({ foo: 1 }).have(['foo', 'bar']);
-        }).error.message;
+//     it.only('should make sense for have (Object)', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will({ foo: 1 }).have(['foo', 'bar']);
+//         }).error.message;
 
-        will(msg).be('expected <[object Object]> to have all of these properties: <foo,bar>');
-    });
+//         will(msg).be('expected <[object Object]> to have all of these properties: <foo,bar>');
+//     });
 
-    it('should make sense for haveOnly', function () {
-        var msg = new ThrowAttempt(function () {
-            will([1, 2]).haveOnly(1);
-        }).error.message;
+//     it('should make sense for haveOnly', function () {
+//         var msg = new ThrowAttempt(function () {
+//             will([1, 2]).haveOnly(1);
+//         }).error.message;
 
-        will(msg).be('expected <1,2> to have only these items: <1>');
-    });
-});
+//         will(msg).be('expected <1,2> to have only these items: <1>');
+//     });
+// });
 
 describe('working with promises', function () {
-    it('should not happen without "eventually"', function () {
-        var result = will(1).be(1);
-        will(result).not.exist();
-    });
-
-    it('should happen if "eventually" is used', function () {
-        var result = will(1).eventually.be(1);
-        will(result.constructor.name).be('Promise');
-    });
-
     it('should work with "not.eventually" for success', function () {
-        return Q.Promise(function (resolve, reject) {
-            will(1).not.eventually.be(2).then(function () {
-                resolve();
+        return will(p(1)).eventually.not.be(2).then(function () {
             }, function (err) {
-                reject(new Error('not.eventually did not work'));
+                err(E.NO_THROW);
             });
-        });
     });
 
     it('should work with "eventually.not" for success', function () {
-        return Q.Promise(function (resolve, reject) {
-            will(1).eventually.not.be(2).then(function () {
-                resolve();
+        return will(p(1)).eventually.not.be(2).then(function () {
             }, function (err) {
-                reject(new Error('not.eventually did not work'));
+                err(E.NO_THROW);
             });
-        });
     });
 
     it('should work with "not.eventually" for errors', function () {
-        return Q.Promise(function (resolve, reject) {
-            will(1).not.eventually.be(1).then(function () {
-                reject(new Error('not.eventually did not work'));
+        return will(p(1)).not.eventually.be(1).then(function () {
+                e.err(E.NO_THROW);
             }, function (err) {
-                resolve();
+                // failed like it should have
             });
-        });
     });
 
     it('should work with "eventually.not" for errors', function () {
-        return Q.Promise(function (resolve, reject) {
-            will(1).eventually.not.be(1).then(function () {
-                reject(new Error('not.eventually did not work'));
+
+        return will(p(1)).eventually.not.be(1).then(
+            function () {
+                err(E.NO_THROW);
             }, function (err) {
-                resolve();
+                // failed like it should have
             });
-        });
     });
 
-    // it.only('should work aync', function () {
-    //     var promise = Q.Promise(function (resolve, reject) {
-    //         setTimeout(function () {
-    //             console.log('ready');
-    //             resolve(123);
-    //         }, 300);
-    //     });
-
-    //     return will(promise).eventually.be(1234);
-    // });
-
-    it.only('should work aync', function () {
+    it('should work aync', function () {
         var promise = Q.Promise(function (resolve, reject) {
             setTimeout(function () {
-                console.log('ready');
                 resolve(1234);
-                // reject(new Error('promise broke'));
-                // throw new Error('promise broke');
-            }, 300);
+            }, 10);
         });
 
-        return will(promise).eventually.be(123);
+        return will(promise).eventually.be(123).then(function () {
+            err(E.NO_THROW);
+        }, function () {
+            // failed like it should have
+        });
     });
 });
