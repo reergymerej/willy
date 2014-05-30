@@ -72,12 +72,13 @@ will('false').beLike(false);
 ```
 
 ##### eventually
-returns a promise rather than raising an error
+checks result of a promise
 
 ```js
 describe('some test suite', function () {
     it('should be less than 2', function () {
-        return will(2).eventually.beLessThan(2);
+        var promise = Q.fcall(function () { return 2; });
+        return will(promise).eventually.beLessThan(2);
     });
 });
 ```
