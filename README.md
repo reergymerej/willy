@@ -200,8 +200,7 @@ add your own test to Willy
 
 Add custom tests by passing a **named** function to `willy.addTest`.
 
-* Return the result of `this.if` so Willy can automatically handle
-* `not` and `eventually` for you.  `if` takes 3 arguments:
+* Return the result of `this.if` so Willy can automatically handle `not` and `eventually` for you.  `if` takes 3 arguments:
     * a function passed the value being tested
     * a string explaining what you were testing
     * the value tested (optional)
@@ -216,9 +215,8 @@ willy.addTest(function beLessThan(expectedValue) {
         // a function passed the value being tested
         function (actualValue) {
 
-            // return the result of your test expression
+            // return the result of your test
             return actualValue < expectedValue;
-
         },
 
         // a string explaining what you were testing
