@@ -237,7 +237,8 @@ will(1).not.beLessThan(2); // 'expected <1> not to be less than <2>'
 // fails as a promise
 describe('some test suite', function () {
     it('should be less than 2', function () {
-        return will(2).eventually.beLessThan(2);
+        var promise = Q.fcall(function () { return 2; });
+        return will(promise).eventually.beLessThan(2);
     });
 });
 ```
