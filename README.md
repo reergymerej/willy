@@ -22,8 +22,9 @@ describe('some test suite', function () {
 **Tests**
 * be
 * beA/beAn
-* beDefined
+* beDefined 
 * beLike
+* beNull
 * beUndefined
 * eventually
 * exist
@@ -90,8 +91,19 @@ will('').beLike(false);
 will('false').beLike(false);
 ```
 
+##### beNull
+checks for `null`
+
+```js
+// pass
+will(null).beNull();
+
+// fail
+will(undefined).beNull();
+```
+
 ##### beUndefined
-checks to see if it's undefined
+checks to see if it's `undefined`
 
 ```js
 var foo;

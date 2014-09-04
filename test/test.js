@@ -574,6 +574,50 @@ describe('beUndefined', function () {
     });
 });
 
+describe('beNull', function () {
+    it('should not throw if tested item is null', function () {
+        var threw = mayThrow(function () {
+            will(null).beNull();
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if tested item is not null', function () {
+        var threw = mayThrow(function () {
+            will(undefined).beNull();
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    describe('inverted', function () {
+        it('should throw if tested item is null', function () {
+            var threw = mayThrow(function () {
+                will(null).not.beNull();
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if tested item is not null', function () {
+            var threw = mayThrow(function () {
+                will(undefined).not.beNull();
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+});
+
 describe('not', function () {
     describe('be', function () {
         it('should throw if passes identity comparison', function () {

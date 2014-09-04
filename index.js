@@ -16,7 +16,8 @@ var E = {
     OBJ_HAS_EXTRA: 'have only these properties:',
     MATCH: 'match RegExp:',
     BE_DEFINED: 'be defined',
-    BE_UNDEFINED: 'be defined'
+    BE_UNDEFINED: 'be defined',
+    BE_NULL: 'be null'
 };
 
 /**
@@ -254,7 +255,15 @@ Question.prototype.beUndefined = function () {
     }, E.BE_UNDEFINED);
 };
 
-// The 'toBeNull' matcher compares against null
+/**
+* Tests to see if a value is null.
+*/
+Question.prototype.beNull = function () {
+    return this.if(function (val) {
+        return val === null;
+    }, E.BE_NULL);
+};
+
 // The 'toBeTruthy' matcher is for boolean casting testing
 // The 'toBeFalsy' matcher is for boolean casting testing
 // The 'toContain' matcher is for finding an item in an Array
