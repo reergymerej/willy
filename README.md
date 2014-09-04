@@ -24,6 +24,8 @@ describe('some test suite', function () {
 * beA/beAn
 * beDefined
 * beFalsy
+* beGreaterThan
+* beLessThan
 * beLike
 * beNull
 * beTruthy
@@ -91,6 +93,28 @@ will('').beFalsy();
 
 // fail
 will('asdf').beFalsy();
+```
+
+##### beGreaterThan
+checks to see if a value is greater than expected
+
+```js
+// pass
+will(4).beGreaterThan(3);
+
+// fail
+will(3).beGreaterThan(3);
+```
+
+##### beLessThan
+checks to see if a value is less than expected
+
+```js
+// pass
+will(3).beLessThan(4);
+
+// fail
+will(3).beLessThan(3);
 ```
 
 ##### beLike

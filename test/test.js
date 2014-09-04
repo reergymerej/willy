@@ -706,6 +706,94 @@ describe('beFalsy', function () {
     });
 });
 
+describe('beLessThan', function () {
+    it('should not throw if item is less than expected', function () {
+        var threw = mayThrow(function () {
+            will(3).beLessThan(4);
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if item is not less than expected', function () {
+        var threw = mayThrow(function () {
+            will(3).beLessThan(3);
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    describe('inverted', function () {
+        it('should throw if item is less than expected', function () {
+            var threw = mayThrow(function () {
+                will(3).not.beLessThan(4);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if item is not less than expected', function () {
+            var threw = mayThrow(function () {
+                will(3).not.beLessThan(3);
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+});
+
+describe('beGreaterThan', function () {
+    it('should not throw if item is greater than expected', function () {
+        var threw = mayThrow(function () {
+            will(4).beGreaterThan(3);
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if item is not greater than expected', function () {
+        var threw = mayThrow(function () {
+            will(3).beGreaterThan(3);
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    describe('inverted', function () {
+        it('should throw if item is greater than expected', function () {
+            var threw = mayThrow(function () {
+                will(4).not.beGreaterThan(3);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if item is not greater than expected', function () {
+            var threw = mayThrow(function () {
+                will(3).not.beGreaterThan(3);
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+});
+
 describe('not', function () {
     describe('be', function () {
         it('should throw if passes identity comparison', function () {

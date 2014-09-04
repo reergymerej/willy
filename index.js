@@ -19,7 +19,9 @@ var E = {
     BE_UNDEFINED: 'be defined',
     BE_NULL: 'be null',
     BE_TRUTHY: 'be truthy',
-    BE_FALSY: 'be falsy'
+    BE_FALSY: 'be falsy',
+    BE_LESS_THAN: 'be less than',
+    BE_GREATER_THAN: 'be greater than'
 };
 
 /**
@@ -284,7 +286,24 @@ Question.prototype.beFalsy = function () {
     }, E.BE_FALSY);
 };
 
-// The 'toContain' matcher is for finding an item in an Array
+/**
+* Tests to see if a value is less than another.
+*/
+Question.prototype.beLessThan = function (expected) {
+    return this.if(function (actual) {
+        return actual < expected;
+    }, E.BE_LESS_THAN, expected);
+};
+
+/**
+* Tests to see if a value is greater than another.
+*/
+Question.prototype.beGreaterThan = function (expected) {
+    return this.if(function (actual) {
+        return actual > expected;
+    }, E.BE_GREATER_THAN, expected);
+};
+
 // The 'toBeLessThan' matcher is for mathematical comparisons
 // The 'toBeGreaterThan' matcher is for mathematical comparisons
 // The 'toBeCloseTo' matcher is for precision math comparison
