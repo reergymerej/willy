@@ -13,7 +13,15 @@ var E = {
     HAVE_ANY_OBJ: 'have any of these properties:',
     HAVE_ANY_ARR: 'have any of these items:',
     ARR_HAS_EXTRA: 'have only these items:',
-    OBJ_HAS_EXTRA: 'have only these properties:'
+    OBJ_HAS_EXTRA: 'have only these properties:',
+    MATCH: 'match RegExp:',
+    BE_DEFINED: 'be defined',
+    BE_UNDEFINED: 'be defined',
+    BE_NULL: 'be null',
+    BE_TRUTHY: 'be truthy',
+    BE_FALSY: 'be falsy',
+    BE_LESS_THAN: 'be less than',
+    BE_GREATER_THAN: 'be greater than'
 };
 
 /**
@@ -221,6 +229,79 @@ Question.prototype.haveOwn = function (property) {
     return this.if(function (val) {
         return val.hasOwnProperty(property);
     }, E.HAVE_OWN, property);
+};
+
+/**
+* Tests a value against a Regular Expression.
+* @param {RegExp} regex
+*/
+Question.prototype.match = function (regex) {
+    return this.if(function (val) {
+        return regex.test(val);
+    }, E.MATCH, regex);
+};
+
+/**
+* Tests to see if a value is defined.
+*/
+Question.prototype.beDefined = function () {
+    return this.if(function (val) {
+        return val !== undefined;
+    }, E.BE_DEFINED);
+};
+
+/**
+* Tests to see if a value is undefined.
+*/
+Question.prototype.beUndefined = function () {
+    return this.if(function (val) {
+        return val === undefined;
+    }, E.BE_UNDEFINED);
+};
+
+/**
+* Tests to see if a value is null.
+*/
+Question.prototype.beNull = function () {
+    return this.if(function (val) {
+        return val === null;
+    }, E.BE_NULL);
+};
+
+/**
+* Tests to see if a value is truthy.
+*/
+Question.prototype.beTruthy = function () {
+    return this.if(function (val) {
+        return !!val;
+    }, E.BE_TRUTHY);
+};
+
+/**
+* Tests to see if a value is falsy.
+*/
+Question.prototype.beFalsy = function () {
+    return this.if(function (val) {
+        return !val;
+    }, E.BE_FALSY);
+};
+
+/**
+* Tests to see if a value is less than another.
+*/
+Question.prototype.beLessThan = function (expected) {
+    return this.if(function (actual) {
+        return actual < expected;
+    }, E.BE_LESS_THAN, expected);
+};
+
+/**
+* Tests to see if a value is greater than another.
+*/
+Question.prototype.beGreaterThan = function (expected) {
+    return this.if(function (actual) {
+        return actual > expected;
+    }, E.BE_GREATER_THAN, expected);
 };
 
 /**
