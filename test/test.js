@@ -424,6 +424,108 @@ describe('haveOwn', function () {
     });
 });
 
+describe('match', function () {
+    var foo;
+    
+    beforeEach(function () {
+        foo = 'asdf';
+    });
+
+    afterEach(function () {
+        foo = undefined;
+    });
+
+    it('should not throw if tested item matches regex', function () {
+        var threw = mayThrow(function () {
+            will(foo).match(/SD/i);
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if tested item does not match regex', function () {
+        var threw = mayThrow(function () {
+            will(foo).match(/SD/);
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    describe('inverted', function () {
+        it('should throw if tested item matches regex', function () {
+            var threw = mayThrow(function () {
+                will(foo).not.match(/SD/i);
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if tested item does not match regex', function () {
+            var threw = mayThrow(function () {
+                will(foo).not.match(/SD/);
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+});
+
+describe('beDefined', function () {
+    it('should not throw if tested item is defined', function () {
+        var foo;
+        var threw = mayThrow(function () {
+            will(foo).beDefined();
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if tested item is undefined', function () {
+        var foo = 123;
+        var threw = mayThrow(function () {
+            will(foo).beDefined();
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    describe('inverted', function () {
+        it('should throw if tested item is defined', function () {
+            var foo;
+            var threw = mayThrow(function () {
+                will(foo).not.beDefined();
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if tested item is undefined', function () {
+            var foo = 123;
+            var threw = mayThrow(function () {
+                will(foo).not.beDefined();
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+});
+
 describe('not', function () {
     describe('be', function () {
         it('should throw if passes identity comparison', function () {
@@ -843,132 +945,8 @@ describe('addTest', function () {
                 err(E.NO_THROW);   
             }
         });
-
-        // describe('raised messages should make sense', function () {
-        //     it('should throw a message that makes sense', function () {
-        //         var throwAttempt = new ThrowAttempt(function () {
-        //             will(2).beLessThan(2);
-        //         });
-
-        //         if (throwAttempt.error.message !==
-        //             'expected <2> to be less than <2>') {
-        //             err('wrong message');
-        //         }
-        //     });
-
-        //     it.only('should throw a message that makes sense when using not', function () {
-        //         var throwAttempt = new ThrowAttempt(function () {
-        //             will(1).not.beLessThan(2);
-        //         });
-
-        //         if (throwAttempt.error.message !==
-        //             'expected <1> not to be less than <2>') {
-        //             err('wrong message');
-        //         }
-        //     });
-        // });
     });
 });
-
-// describe('error messages', function () {
-//     it('should make sense for be', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will(false).be(true);
-//         }).error.message;
-
-//         will(msg).be('expected <false> to strictly equal <true>');
-//     });
-
-//     it('should make sense for not.be', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will(false).not.be(false);
-//         }).error.message;
-
-//         will(msg).be('expected <false> not to strictly equal <false>');
-//     });
-
-//     it('should make sense for beA/beAn', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will('foo').beAn(Array);
-//         }).error.message;
-
-//         will(msg).be('expected <foo> to be an instance of <Array>');
-//     });
-
-//     it('should make sense for not.beA/beAn', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will(['foo']).not.beAn(Array);
-//         }).error.message;
-
-//         will(msg).be('expected <' + ['foo'] + '> not to be an instance of <Array>');
-//     });
-
-//     it('should make sense for beLike', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will('').beLike(true);
-//         }).error.message;
-
-//         will(msg).be('expected <> to be like <true>');
-//     });
-
-//     it('should make sense for not.beLike', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will('').not.beLike(false);
-//         }).error.message;
-
-//         will(msg).be('expected <> not to be like <false>');
-//     });
-
-//     it('should make sense for exist', function () {
-//         var msg = new ThrowAttempt(function () {
-//             var foo = {};
-//             will(foo.bar).exist();
-//         }).error.message;
-
-//         will(msg).be('expected <undefined> to exist');
-//     });
-
-//     it('should make sense for not.exist', function () {
-//         var msg = new ThrowAttempt(function () {
-//             var foo = { bar: 1 };
-//             will(foo.bar).not.exist();
-//         }).error.message;
-
-//         will(msg).be('expected <1> not to exist');
-//     });
-
-//     it('should make sense for have (Array)', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will([1, 2]).have([1, 2, 3]);
-//         }).error.message;
-
-//         will(msg).be('expected <1,2> to have all of these items: <1,2,3>');
-//     });
-
-//     it('should make sense for not.have (Array)', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will([1, 2, 3]).not.have([1, 2, 3]);
-//         }).error.message;
-
-//         will(msg).be('expected <1,2,3> not to have all of these items: <1,2,3>');
-//     });
-
-//     it.only('should make sense for have (Object)', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will({ foo: 1 }).have(['foo', 'bar']);
-//         }).error.message;
-
-//         will(msg).be('expected <[object Object]> to have all of these properties: <foo,bar>');
-//     });
-
-//     it('should make sense for haveOnly', function () {
-//         var msg = new ThrowAttempt(function () {
-//             will([1, 2]).haveOnly(1);
-//         }).error.message;
-
-//         will(msg).be('expected <1,2> to have only these items: <1>');
-//     });
-// });
 
 describe('working with promises', function () {
     it('should work with "not.eventually" for success', function () {
@@ -1003,7 +981,7 @@ describe('working with promises', function () {
             });
     });
 
-    it('should work aync', function () {
+    it('should work async', function () {
         var promise = Q.Promise(function (resolve, reject) {
             setTimeout(function () {
                 resolve(1234);

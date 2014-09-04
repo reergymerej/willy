@@ -13,7 +13,9 @@ var E = {
     HAVE_ANY_OBJ: 'have any of these properties:',
     HAVE_ANY_ARR: 'have any of these items:',
     ARR_HAS_EXTRA: 'have only these items:',
-    OBJ_HAS_EXTRA: 'have only these properties:'
+    OBJ_HAS_EXTRA: 'have only these properties:',
+    MATCH: 'match RegExp:',
+    BE_DEFINED: 'be defined'
 };
 
 /**
@@ -221,6 +223,27 @@ Question.prototype.haveOwn = function (property) {
     return this.if(function (val) {
         return val.hasOwnProperty(property);
     }, E.HAVE_OWN, property);
+};
+
+/**
+* Tests a value against a Regular Expression.
+* @param {RegExp} regex
+*/
+Question.prototype.match = function (regex) {
+    return this.if(function (val) {
+
+        return regex.test(val);
+    }, E.MATCH, regex);
+};
+
+/**
+* Tests to see if a value is defiend.
+*/
+Question.prototype.beDefined = function () {
+    return this.if(function (val) {
+
+        return val === undefined;
+    }, E.BE_DEFINED);
 };
 
 /**
