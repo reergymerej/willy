@@ -17,7 +17,7 @@ describe('some test suite', function () {
 
 ## Installation
 
-Use npm, man.  Keep it simple.
+Use [npm](https://www.npmjs.org/doc/README.html), man.  Keep it simple.
 
     npm install willy --save-dev
 
