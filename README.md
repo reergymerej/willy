@@ -20,26 +20,25 @@ describe('some test suite', function () {
 ### Index
 
 **Tests**
-* be
-* beA/beAn
-* beDefined
-* beFalsy
-* beGreaterThan
-* beLessThan
-* beLike
-* beNull
-* beTruthy
-* beUndefined
-* eventually
-* exist
-* have
-* haveAny
-* haveOnly
-* haveOwn
-* match
-* not
-* throw
-
+* [be](#be)
+* [beA/beAn](#beA-beAn)
+* [beDefined](#beDefined)
+* [beFalsy](#beFalsy)
+* [beGreaterThan](#beGreaterThan)
+* [beLessThan](#beLessThan)
+* [beLike](#beLike)
+* [beNull](#beNull)
+* [beTruthy](#beTruthy)
+* [beUndefined](#beUndefined)
+* [eventually](#eventually)
+* [exist](#exist)
+* [have](#have)
+* [haveAny](#haveAny)
+* [haveOnly](#haveOnly)
+* [haveOwn](#haveOwn)
+* [match](#match)
+* [not](#not)
+* [throw](#throw)
 
 
 **Utilities**
@@ -47,6 +46,7 @@ describe('some test suite', function () {
 
 #### Tests
 
+<a name="be"></a>
 ##### be 
 checks for identity (===)
 
@@ -58,6 +58,7 @@ will(3).be(3);
 will('3').be(3);
 ```
 
+<a name="beA-beAn"></a>
 ##### beA/beAn
 checks for inheritance (instanceof) *- These are synonyms.*
 
@@ -70,6 +71,7 @@ will([]).beAn(Array);
 will('').beA(Number);
 ```
 
+<a name="beDefined"></a>
 ##### beDefined
 checks to see if it's defined
 
@@ -84,6 +86,7 @@ will(foo).beDefined();
 will(bar).beDefined();
 ```
 
+<a name="beFalsy"></a>
 ##### beFalsy
 checks for a *falsy* value
 
@@ -95,6 +98,7 @@ will('').beFalsy();
 will('asdf').beFalsy();
 ```
 
+<a name="beGreaterThan"></a>
 ##### beGreaterThan
 checks to see if a value is greater than expected
 
@@ -106,6 +110,7 @@ will(4).beGreaterThan(3);
 will(3).beGreaterThan(3);
 ```
 
+<a name="beLessThan"></a>
 ##### beLessThan
 checks to see if a value is less than expected
 
@@ -117,6 +122,7 @@ will(3).beLessThan(4);
 will(3).beLessThan(3);
 ```
 
+<a name="beLike"></a>
 ##### beLike
 checks for equality (==)
 
@@ -128,6 +134,7 @@ will('').beLike(false);
 will('false').beLike(false);
 ```
 
+<a name="beNull"></a>
 ##### beNull
 checks for `null`
 
@@ -139,6 +146,7 @@ will(null).beNull();
 will(undefined).beNull();
 ```
 
+<a name="beTruthy"></a>
 ##### beTruthy
 checks for a *truthy* value
 
@@ -150,6 +158,7 @@ will('asdf').beTruthy();
 will('').beTruthy();
 ```
 
+<a name="beUndefined"></a>
 ##### beUndefined
 checks to see if it's `undefined`
 
@@ -164,6 +173,7 @@ will(foo).beUndefined();
 will(bar).beUndefined();
 ```
 
+<a name="eventually"></a>
 ##### eventually
 checks result of a promise
 
@@ -176,6 +186,7 @@ describe('some test suite', function () {
 });
 ```
 
+<a name="exist"></a>
 ##### exist
 checks existence
 
@@ -189,6 +200,7 @@ will(foo.bar).exist();
 will(foo.baz).exist();
 ```
 
+<a name="have"></a>
 ##### have
 checks for items/properties in an Array/Object *- All must be present.*
 
@@ -206,6 +218,7 @@ will({ foo: 1, bar: 1 }).have('baz');
 will({ foo: 1, bar: 1 }).have(['foo', 'baz']);
 ```
 
+<a name="haveAny"></a>
 ##### haveAny
 checks for the existence of one item/property in an Array/Object
 
@@ -223,6 +236,7 @@ will({ foo: 1, bar: 1 }).haveAny('baz');
 will({ foo: 1, bar: 1 }).haveAny(['baz', 'quux']);
 ```
 
+<a name="haveOnly"></a>
 ##### haveOnly
 checks Array/Object for unexpected items/properties
 
@@ -240,6 +254,7 @@ will({ foo: 1, bar: 1 }).haveOnly('baz');
 will({ foo: 1, bar: 1, baz: 1 }).haveOnly(['foo', 'bar']);
 ```
 
+<a name="haveOwn"></a>
 ##### haveOwn
 checks for own properties (hasOwnProperty)
 
@@ -257,6 +272,7 @@ will(foo).haveOwn('bar');
 will(foo).haveOwn('baz');
 ```
 
+<a name="match"></a>
 ##### match
 tests against RegExp
 
@@ -269,6 +285,7 @@ will('asdf').match(/SD/i);
 will('asdf').match(/SD/);
 ```
 
+<a name="not"></a>
 ##### not
 negates the logic of any assertion
 
@@ -282,6 +299,7 @@ will('foo').not.be('foo');
 will([1]).not.haveOnly(1);
 ```
 
+<a name="throw"></a>
 ##### throw
 checks for errors being thrown
 
