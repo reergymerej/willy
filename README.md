@@ -15,9 +15,14 @@ describe('some test suite', function () {
 });
 ```
 
-## API
+## Installation
 
-### Index
+Use npm, man.  Keep it simple.
+
+    npm install willy --save-dev
+
+
+### API
 
 **Built-in Tests**
 * [be](#be)
