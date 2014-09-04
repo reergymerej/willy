@@ -315,18 +315,18 @@ Add custom tests by passing a **named** function to `willy.addTest`.
 var willy = require('willy'),
     will = willy.will;
 
-willy.addTest(function beLessThan(expectedValue) {
+willy.addTest(function beLongerThan(expectedValue) {
     return this.if(
 
         // a function passed the value being tested
         function (actualValue) {
 
             // return the result of your test
-            return actualValue < expectedValue;
+            return actualValue.length > expectedValue.length;
         },
 
         // a string explaining what you were testing
-        'be less than',
+        'be longer than',
 
         // the value tested (optional)
         expectedValue
@@ -334,17 +334,17 @@ willy.addTest(function beLessThan(expectedValue) {
 });
 
 // passes
-will(1).beLessThan(2);
+will('12345').beLongerThan('123');
 
 // fails
-will(2).beLessThan(2); // 'expected <2> to be less than <2>'
-will(1).not.beLessThan(2); // 'expected <1> not to be less than <2>'
+will('12345').beLongerThan('12345'); // 'expected <12345> to be longer than <12345>'
+will('12345').not.beLongerThan('1234'); // 'expected <12345> not to be longer than <1234>'
 
 // fails as a promise
 describe('some test suite', function () {
-    it('should be less than 2', function () {
-        var promise = Q.fcall(function () { return 2; });
-        return will(promise).eventually.beLessThan(2);
+    it('should be longer than expected', function () {
+        var promise = Q.fcall(function () { return '123'; });
+        return will(promise).eventually.beLongerThan('12345');
     });
 });
 ```
