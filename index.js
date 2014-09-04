@@ -17,7 +17,9 @@ var E = {
     MATCH: 'match RegExp:',
     BE_DEFINED: 'be defined',
     BE_UNDEFINED: 'be defined',
-    BE_NULL: 'be null'
+    BE_NULL: 'be null',
+    BE_TRUTHY: 'be truthy',
+    BE_FALSY: 'be falsy'
 };
 
 /**
@@ -264,8 +266,24 @@ Question.prototype.beNull = function () {
     }, E.BE_NULL);
 };
 
-// The 'toBeTruthy' matcher is for boolean casting testing
-// The 'toBeFalsy' matcher is for boolean casting testing
+/**
+* Tests to see if a value is truthy.
+*/
+Question.prototype.beTruthy = function () {
+    return this.if(function (val) {
+        return !!val;
+    }, E.BE_TRUTHY);
+};
+
+/**
+* Tests to see if a value is falsy.
+*/
+Question.prototype.beFalsy = function () {
+    return this.if(function (val) {
+        return !val;
+    }, E.BE_FALSY);
+};
+
 // The 'toContain' matcher is for finding an item in an Array
 // The 'toBeLessThan' matcher is for mathematical comparisons
 // The 'toBeGreaterThan' matcher is for mathematical comparisons

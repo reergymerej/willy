@@ -618,6 +618,94 @@ describe('beNull', function () {
     });
 });
 
+describe('beTruthy', function () {
+    it('should not throw if tested item is truthy', function () {
+        var threw = mayThrow(function () {
+            will('asdf').beTruthy();
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if tested item is not truthy', function () {
+        var threw = mayThrow(function () {
+            will('').beTruthy();
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    describe('inverted', function () {
+        it('should throw if tested item is truthy', function () {
+            var threw = mayThrow(function () {
+                will('asdf').not.beTruthy();
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if tested item is not truthy', function () {
+            var threw = mayThrow(function () {
+                will('').not.beTruthy();
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+});
+
+describe('beFalsy', function () {
+    it('should not throw if tested item is falsy', function () {
+        var threw = mayThrow(function () {
+            will('').beFalsy();
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if tested item is not falsy', function () {
+        var threw = mayThrow(function () {
+            will('asdf').beFalsy();
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    describe('inverted', function () {
+        it('should throw if tested item is falsy', function () {
+            var threw = mayThrow(function () {
+                will('').not.beFalsy();
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if tested item is not falsy', function () {
+            var threw = mayThrow(function () {
+                will('asdf').not.beFalsy();
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
+        });
+    });
+});
+
 describe('not', function () {
     describe('be', function () {
         it('should throw if passes identity comparison', function () {

@@ -22,9 +22,11 @@ describe('some test suite', function () {
 **Tests**
 * be
 * beA/beAn
-* beDefined 
+* beDefined
+* beFalsy
 * beLike
 * beNull
+* beTruthy
 * beUndefined
 * eventually
 * exist
@@ -80,6 +82,17 @@ will(foo).beDefined();
 will(bar).beDefined();
 ```
 
+##### beFalsy
+checks for a *falsy* value
+
+```js
+// pass
+will('').beFalsy();
+
+// fail
+will('asdf').beFalsy();
+```
+
 ##### beLike
 checks for equality (==)
 
@@ -100,6 +113,17 @@ will(null).beNull();
 
 // fail
 will(undefined).beNull();
+```
+
+##### beTruthy
+checks for a *truthy* value
+
+```js
+// pass
+will('asdf').beTruthy();
+
+// fail
+will('').beTruthy();
 ```
 
 ##### beUndefined
