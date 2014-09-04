@@ -304,10 +304,6 @@ Question.prototype.beGreaterThan = function (expected) {
     }, E.BE_GREATER_THAN, expected);
 };
 
-// The 'toBeLessThan' matcher is for mathematical comparisons
-// The 'toBeGreaterThan' matcher is for mathematical comparisons
-// The 'toBeCloseTo' matcher is for precision math comparison
-
 /**
 * Throws error based on identity comparison.
 * @param {*} criterion
