@@ -15,7 +15,8 @@ var E = {
     ARR_HAS_EXTRA: 'have only these items:',
     OBJ_HAS_EXTRA: 'have only these properties:',
     MATCH: 'match RegExp:',
-    BE_DEFINED: 'be defined'
+    BE_DEFINED: 'be defined',
+    BE_UNDEFINED: 'be defined'
 };
 
 /**
@@ -231,20 +232,35 @@ Question.prototype.haveOwn = function (property) {
 */
 Question.prototype.match = function (regex) {
     return this.if(function (val) {
-
         return regex.test(val);
     }, E.MATCH, regex);
 };
 
 /**
-* Tests to see if a value is defiend.
+* Tests to see if a value is defined.
 */
 Question.prototype.beDefined = function () {
     return this.if(function (val) {
-
-        return val === undefined;
+        return val !== undefined;
     }, E.BE_DEFINED);
 };
+
+/**
+* Tests to see if a value is undefined.
+*/
+Question.prototype.beUndefined = function () {
+    return this.if(function (val) {
+        return val === undefined;
+    }, E.BE_UNDEFINED);
+};
+
+// The 'toBeNull' matcher compares against null
+// The 'toBeTruthy' matcher is for boolean casting testing
+// The 'toBeFalsy' matcher is for boolean casting testing
+// The 'toContain' matcher is for finding an item in an Array
+// The 'toBeLessThan' matcher is for mathematical comparisons
+// The 'toBeGreaterThan' matcher is for mathematical comparisons
+// The 'toBeCloseTo' matcher is for precision math comparison
 
 /**
 * Throws error based on identity comparison.

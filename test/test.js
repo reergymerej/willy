@@ -480,7 +480,7 @@ describe('match', function () {
 
 describe('beDefined', function () {
     it('should not throw if tested item is defined', function () {
-        var foo;
+        var foo = 123;
         var threw = mayThrow(function () {
             will(foo).beDefined();
         });
@@ -491,7 +491,7 @@ describe('beDefined', function () {
     });
 
     it('should throw if tested item is undefined', function () {
-        var foo = 123;
+        var foo;
         var threw = mayThrow(function () {
             will(foo).beDefined();
         });
@@ -503,7 +503,7 @@ describe('beDefined', function () {
 
     describe('inverted', function () {
         it('should throw if tested item is defined', function () {
-            var foo;
+            var foo = 123;
             var threw = mayThrow(function () {
                 will(foo).not.beDefined();
             });
@@ -514,7 +514,7 @@ describe('beDefined', function () {
         });
 
         it('should not throw if tested item is undefined', function () {
-            var foo = 123;
+            var foo;
             var threw = mayThrow(function () {
                 will(foo).not.beDefined();
             });
@@ -523,6 +523,54 @@ describe('beDefined', function () {
                 err(E.NO_THROW);
             }
         });
+    });
+});
+
+describe('beUndefined', function () {
+    it('should not throw if tested item is undefined', function () {
+        var foo;
+        var threw = mayThrow(function () {
+            will(foo).beUndefined();
+        });
+
+        if (threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    it('should throw if tested item is not undefined', function () {
+        var foo = 123;
+        var threw = mayThrow(function () {
+            will(foo).beUndefined();
+        });
+
+        if (!threw) {
+            err(E.NO_THROW);
+        }
+    });
+
+    describe('inverted', function () {
+        it('should throw if tested item is undefined', function () {
+            var foo;
+            var threw = mayThrow(function () {
+                will(foo).not.beUndefined();
+            });
+
+            if (!threw) {
+                err(E.NO_THROW);
+            }
+        });
+
+        it('should not throw if tested item is defined', function () {
+            var foo = 123;
+            var threw = mayThrow(function () {
+                will(foo).not.beUndefined();
+            });
+
+            if (threw) {
+                err(E.NO_THROW);
+            }
+        });        
     });
 });
 

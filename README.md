@@ -21,9 +21,10 @@ describe('some test suite', function () {
 
 **Tests**
 * be
-* beDefined
 * beA/beAn
+* beDefined
 * beLike
+* beUndefined
 * eventually
 * exist
 * have
@@ -34,15 +35,7 @@ describe('some test suite', function () {
 * not
 * throw
 
-The 'toBeDefined' matcher compares against `undefined`
-The `toBeUndefined` matcher compares against `undefined`
-The 'toBeNull' matcher compares against null
-The 'toBeTruthy' matcher is for boolean casting testing
-The 'toBeFalsy' matcher is for boolean casting testing
-The 'toContain' matcher is for finding an item in an Array
-The 'toBeLessThan' matcher is for mathematical comparisons
-The 'toBeGreaterThan' matcher is for mathematical comparisons
-The 'toBeCloseTo' matcher is for precision math comparison
+
 
 **Utilities**
 * addTest
@@ -60,6 +53,18 @@ will(3).be(3);
 will('3').be(3);
 ```
 
+##### beA/beAn
+checks for inheritance (instanceof) *- These are synonyms.*
+
+```js
+// pass
+will('').beA(String);
+will([]).beAn(Array);
+
+// fail
+will('').beA(Number);
+```
+
 ##### beDefined
 checks to see if it's defined
 
@@ -74,18 +79,6 @@ will(foo).beDefined();
 will(bar).beDefined();
 ```
 
-##### beA/beAn
-checks for inheritance (instanceof) *- These are synonyms.*
-
-```js
-// pass
-will('').beA(String);
-will([]).beAn(Array);
-
-// fail
-will('').beA(Number);
-```
-
 ##### beLike
 checks for equality (==)
 
@@ -95,6 +88,20 @@ will('').beLike(false);
 
 // fail
 will('false').beLike(false);
+```
+
+##### beUndefined
+checks to see if it's undefined
+
+```js
+var foo;
+var bar = 123;
+
+// pass
+will(foo).beUndefined();
+
+// fail
+will(bar).beUndefined();
 ```
 
 ##### eventually
