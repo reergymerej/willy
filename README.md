@@ -19,7 +19,7 @@ describe('some test suite', function () {
 
 ### Index
 
-**Tests**
+**Built-in Tests**
 * [be](#be)
 * [beA/beAn](#beA-beAn)
 * [beDefined](#beDefined)
@@ -30,21 +30,24 @@ describe('some test suite', function () {
 * [beNull](#beNull)
 * [beTruthy](#beTruthy)
 * [beUndefined](#beUndefined)
-* [eventually](#eventually)
 * [exist](#exist)
 * [have](#have)
 * [haveAny](#haveAny)
 * [haveOnly](#haveOnly)
 * [haveOwn](#haveOwn)
 * [match](#match)
-* [not](#not)
 * [throw](#throw)
 
+**Custom Tests**
+* [addTest](#addTest)
 
-**Utilities**
-* addTest
+**Modifiers**
+* [eventually](#eventually)
+* [not](#not)
 
-#### Tests
+---
+
+#### Built-in Tests
 
 <a name="be"></a>
 ##### be 
@@ -173,19 +176,6 @@ will(foo).beUndefined();
 will(bar).beUndefined();
 ```
 
-<a name="eventually"></a>
-##### eventually
-checks result of a promise
-
-```js
-describe('some test suite', function () {
-    it('should be less than 2', function () {
-        var promise = Q.fcall(function () { return 2; });
-        return will(promise).eventually.beLessThan(2);
-    });
-});
-```
-
 <a name="exist"></a>
 ##### exist
 checks existence
@@ -285,20 +275,6 @@ will('asdf').match(/SD/i);
 will('asdf').match(/SD/);
 ```
 
-<a name="not"></a>
-##### not
-negates the logic of any assertion
-
-```js
-// pass
-will(true).not.be(false);
-will([1, 2]).not.haveOnly(1);
-
-// fail
-will('foo').not.be('foo');
-will([1]).not.haveOnly(1);
-```
-
 <a name="throw"></a>
 ##### throw
 checks for errors being thrown
@@ -317,8 +293,10 @@ will(bad).throw();
 will(good).throw();
 ```
 
-#### Utilities
 
+#### Custom Tests
+
+<a name="addTest"></a>
 ##### addTest
 add your own test to Willy
 
@@ -365,4 +343,34 @@ describe('some test suite', function () {
         return will(promise).eventually.beLongerThan('12345');
     });
 });
+```
+
+
+#### Modifiers
+
+<a name="eventually"></a>
+##### eventually
+checks result of a promise
+
+```js
+describe('some test suite', function () {
+    it('should be less than 2', function () {
+        var promise = Q.fcall(function () { return 2; });
+        return will(promise).eventually.beLessThan(2);
+    });
+});
+```
+
+<a name="not"></a>
+##### not
+negates the logic of any assertion
+
+```js
+// pass
+will(true).not.be(false);
+will([1, 2]).not.haveOnly(1);
+
+// fail
+will('foo').not.be('foo');
+will([1]).not.haveOnly(1);
 ```
