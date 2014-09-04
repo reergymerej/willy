@@ -21,6 +21,7 @@ describe('some test suite', function () {
 
 **Tests**
 * be
+* beDefined
 * beA/beAn
 * beLike
 * eventually
@@ -29,8 +30,19 @@ describe('some test suite', function () {
 * haveAny
 * haveOnly
 * haveOwn
+* match
 * not
 * throw
+
+The 'toBeDefined' matcher compares against `undefined`
+The `toBeUndefined` matcher compares against `undefined`
+The 'toBeNull' matcher compares against null
+The 'toBeTruthy' matcher is for boolean casting testing
+The 'toBeFalsy' matcher is for boolean casting testing
+The 'toContain' matcher is for finding an item in an Array
+The 'toBeLessThan' matcher is for mathematical comparisons
+The 'toBeGreaterThan' matcher is for mathematical comparisons
+The 'toBeCloseTo' matcher is for precision math comparison
 
 **Utilities**
 * addTest
@@ -46,6 +58,20 @@ will(3).be(3);
 
 // fail
 will('3').be(3);
+```
+
+##### beDefined
+checks to see if it's defined
+
+```js
+var foo = 123;
+var bar;
+
+// pass
+will(foo).beDefined();
+
+// fail
+will(bar).beDefined();
 ```
 
 ##### beA/beAn
@@ -162,6 +188,18 @@ will(foo).haveOwn('bar');
 
 // fail
 will(foo).haveOwn('baz');
+```
+
+##### match
+tests against RegExp
+
+```js
+
+// pass
+will('asdf').match(/SD/i);
+
+// fail
+will('asdf').match(/SD/);
 ```
 
 ##### not
