@@ -15,6 +15,28 @@ describe('some test suite', function () {
 });
 ```
 
+**Willy**...
+* is super easy to use
+* includes a bunch of built-in tests
+* makes custom tests easy
+* supports promises
+
+Keep it simple, so you can focus on your code, not your tests.  Compare testing `instanceof` in a few different assertion libraries.
+
+```javascript
+// Chai
+expect(foo).to.be.an.instanceof(Foo);
+
+// Shouldjs
+foo.should.be.an.instanceOf(Foo)
+
+// Jasmine
+expect(foo).toEqual(jasmine.any(Foo));
+
+// Willy
+will(foo).beA(Foo);
+```
+
 ## Installation
 
 Use [npm](https://www.npmjs.org/doc/README.html), man.  Keep it simple.
