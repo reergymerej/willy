@@ -1,6 +1,6 @@
 {
   "name": "willy",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "An assertion library that reads very naturally.",
   "main": "index.js",
   "directories": {
@@ -19,7 +19,9 @@
     "assert",
     "bdd",
     "tdd",
-    "natural"
+    "natural",
+    "unit tests",
+    "promises"
   ],
   "author": "Jeremy Greer <jeremy.greer.atl@gmail.com> (http://jeremygreer.herokuapp.com/)",
   "license": "ISC",
