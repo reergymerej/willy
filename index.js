@@ -1,4 +1,5 @@
 'use strict';
+
 var Q = require('q');
 
 var E = {
@@ -224,25 +225,51 @@ Question.prototype.getError = function (comparison, values) {
 * @param {Function} testCallback
 * @param {String} message
 * @param {*} criteria
+* @return {Q.Promise/Question} When `eventually` is used, this is a Q.Promise.
+* Otherwise, this is a `Question`.
 */
 Question.prototype.if = function (testCallback, message, criteria) {
     var that = this;
 
     if (this.eventual) {
+        // `this.item` is a promise
 
-        return this.item.then(function (value) {
+        // Return our own promise so we can deal with the
+        // promise being tested.
+        return Q.Promise(function (resolve, reject) {
 
-            if (!that.isTrue(testCallback(value))) {
-                throw that.getError(message, criteria);
-            }
+            // Add to the end of the test's promise so we can
+            // get the resolved value.
+            that.item.then(
 
-        }, function (err) {
-            throw that.getError(message, criteria);
+                // promise fulfilled, let's test it
+                function (value) {
+
+                    // Now that the promise has been fulfilled,
+                    // change `this.actual` to the value, rather than
+                    // the promise.
+                    that.promise = that.actual;
+                    that.actual = value;
+
+                    if (!that.isTrue(testCallback())) {
+                        reject(that.getErrorMessage(message));
+                    } else {
+                        resolve(that.actual);
+                    }
+                },
+
+                // The promise threw an error.
+                function (err) {
+                    reject('You broke your promise. :(\n"' + err + '"');
+                }
+            );
         });
     } else {
 
         if (!this.isTrue(testCallback(this.item))) {
             throw this.getError(message, criteria);
+        } else {
+            return this;
         }
     }
 };
@@ -300,14 +327,17 @@ var addTest = function (fn) {
 * @param {Function} fn a named function
 * @param {String} [explanation] what you were expecting to be true
 * If omitted, it will be constructed from the name of fn.
+* @param {String} [fnName] Use when you want to use a reserved word
+* for your test's name.
 */
-var writeTest = function (fn, explanation) {
+var writeTest = function (fn, explanation, fnName) {
 
     explanation = explanation || getExplanation(fn.name);
+    fnName = fnName || fn.name;
 
     // Wrap the test in another function so we can
     // inject the actual and expected values.
-    Question.prototype[fn.name] = function (expected) {
+    Question.prototype[fnName] = function (expected) {
 
         var that = this;
         
@@ -315,15 +345,13 @@ var writeTest = function (fn, explanation) {
         that.hasExpected = arguments.length > 0;
         that.explanation = explanation;
 
-        this.if(
+        return this.if(
             function () {
                 // Run the test using the Question's scope
                 // to inject the values.
                 return fn.call(that, expected);
             }
         );
-
-        return this.prototype;
     };
 };
 
@@ -450,37 +478,32 @@ writeTest(function be() {
 * Throws error based on equality comparison.
 * @param {*} criterion
 */
-Question.prototype.beLike = function (criterion) {
-    return this.if(function (val) {
-        return val == criterion;
-    }, E.EQ, criterion);
-};
+writeTest(function beLike() {
+    return this.actual == this.expected;
+}, E.EQ);
 
 /**
 * Throw if the item in Question does not throw.
 */
-Question.prototype.throw = function () {
-    return this.if(function (val) {
-        return mayThrow(val);
-    }, E.THROW);
-};
+writeTest(function () {
+    return mayThrow(this.actual);
+}, null, 'throw');
 
 /**
 * Tests inheritance
 * @param {Function} criterion
 */
-Question.prototype.beA = 
-    Question.prototype.beAn = function (criterion) {
-        return this.if(function (val) {
-            return val instanceof criterion;
-        }, E.INST, criterion.name);
-};
+writeTest(function beA() {
+    return this.actual instanceof this.expected;
+}, E.INST);
+
+writeTest(function beAn() {
+    return this.actual instanceof this.expected;
+}, E.INST);
 
 /**
 * Tests for an undefined item.
 */
-Question.prototype.exist = function () {
-    return this.if(function (val) {
-        return val !== undefined;
-    }, E.UNDEF);
-};
+writeTest(function exist() {
+    return this.actual !== undefined;
+}, E.UNDEF);
