@@ -1,46 +1,15 @@
 'use strict';
 
 var Q = require('q');
-var path = require('path');
-var fs = require('fs');
 
-var E = {
-    UNDEF: 'exist',
-    INST: 'be an instance of',
-    THROW: 'throw an error',
-    NOT_IN_ARR: 'have all of these items:',
-    EQ: 'be like',
-    STRICT_EQ: 'strictly equal',
-    NOT_IN_OBJ: 'have all of these properties:',
-    HAVE_OWN: 'have own',
-    HAVE_ANY_OBJ: 'have any of these properties:',
-    HAVE_ANY_ARR: 'have any of these items:',
-    ARR_HAS_EXTRA: 'have only these items:',
-    OBJ_HAS_EXTRA: 'have only these properties:',
-    MATCH: 'match RegExp:',
-    BE_DEFINED: 'be defined',
-    BE_UNDEFINED: 'be defined',
-    BE_NULL: 'be null',
-    BE_TRUTHY: 'be truthy',
-    BE_FALSY: 'be falsy',
-    BE_LESS_THAN: 'be less than',
-    BE_GREATER_THAN: 'be greater than'
-};
-
-var loadTests = function () {
-    var pathname = path.join(__dirname, 'willy-tests.js');
+var loadBuiltinTests = function () {
     var willyTests = require('./willy-tests.js');
+
     Object.keys(willyTests).forEach(function (test) {
         var definition = willyTests[test];
-
-        defineTest(
-            definition.fn,
-            definition.explanation,
-            definition.name || definition.fn.name || test
-        );
+        definition.name = definition.name || definition.fn.name  || test;
+        defineTest(definition);
     });
-
-    console.log('tests loaded');
 };
 
 /**
@@ -206,13 +175,21 @@ var addTest = function (fn) {
 
 /**
 * Add a new test to the Question prototype.
-* @param {Function} fn a named function
+* @param {Function/Object} fn a named function; If using an object, 
+* pass params as properties of the object.
 * @param {String} [explanation] what you were expecting to be true
 * If omitted, it will be constructed from the name of fn.
 * @param {String} [fnName] Use when you want to use a reserved word
 * for your test's name.
 */
 var defineTest = function (fn, explanation, fnName) {
+
+    // Handle alternate signature.
+    if (typeof fn === 'object') {
+        fnName = fn.name;
+        explanation = fn.explanation;
+        fn = fn.fn;
+    }
 
     fnName = fnName || fn.name;
     explanation = explanation || getExplanation(fnName);
@@ -242,8 +219,7 @@ var defineTest = function (fn, explanation, fnName) {
     };
 };
 
-loadTests();
-
+loadBuiltinTests();
 
 exports.will = will;
 exports.addTest = addTest;

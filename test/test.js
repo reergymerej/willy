@@ -814,23 +814,50 @@ describe('addTest', function () {
 });
 
 describe('defineTest', function () {
-    before(function () {
-        willy.defineTest(function equal99() {
-            return this.actual === 99;
+
+    describe('signature one', function () {
+        before(function () {
+            willy.defineTest(function equal99() {
+                return this.actual === 99;
+            });
+        });
+
+        after(function () {
+            delete will().constructor.prototype.equal99;
+        });
+
+        it('should allow you to add a test to Willy\'s repertoire', function () {
+            assert.doesNotThrow(function () {
+                will(99).equal99(99);
+            });
+
+            assert.throws(function () {
+                will(99).not.equal99(99);
+            });
         });
     });
 
-    after(function () {
-        delete will().constructor.prototype.equal99;
-    });
-
-    it('should allow you to add a test to Willy\'s repertoire', function () {
-        assert.doesNotThrow(function () {
-            will(99).equal99(99);
+    describe('signature two', function () {
+        before(function () {
+            willy.defineTest({
+                fn: function equal99() {
+                    return this.actual === 99;
+                }
+            });
         });
 
-        assert.throws(function () {
-            will(99).not.equal99(99);
+        after(function () {
+            delete will().constructor.prototype.equal99;
+        });
+
+        it('should allow you to add a test to Willy\'s repertoire', function () {
+            assert.doesNotThrow(function () {
+                will(99).equal99(99);
+            });
+
+            assert.throws(function () {
+                will(99).not.equal99(99);
+            });
         });
     });
 });
