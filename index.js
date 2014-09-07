@@ -3,12 +3,17 @@
 var Q = require('q');
 
 var loadBuiltinTests = function () {
-    var willyTests = require('./willy-tests.js');
+    loadDefinitions(require('./willy-tests.js'));
+};
 
-    Object.keys(willyTests).forEach(function (test) {
-        var definition = willyTests[test];
+/**
+* @param {Object}
+*/
+var loadDefinitions = function (tests) {
+    Object.keys(tests).forEach(function (test) {
+        var definition = tests[test];
         definition.name = definition.name || definition.fn.name  || test;
-        defineTest(definition);
+        define(definition);
     });
 };
 
@@ -169,7 +174,7 @@ var getExplanation = function (name) {
 * @deprecated use #test instead
 */
 var addTest = function (fn) {
-    console.warn('Don\'t use addTest.  Use defineTest instead.');
+    console.warn('Don\'t use addTest.  Use define instead.');
     Question.prototype[fn.name] = fn;
 };
 
@@ -182,7 +187,7 @@ var addTest = function (fn) {
 * @param {String} [fnName] Use when you want to use a reserved word
 * for your test's name.
 */
-var defineTest = function (fn, explanation, fnName) {
+var define = function (fn, explanation, fnName) {
 
     // Handle alternate signature.
     if (typeof fn === 'object') {
@@ -223,4 +228,5 @@ loadBuiltinTests();
 
 exports.will = will;
 exports.addTest = addTest;
-exports.defineTest = defineTest;
+exports.define = define;
+exports.loadDefinitions = loadDefinitions;

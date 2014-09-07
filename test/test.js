@@ -813,11 +813,11 @@ describe('addTest', function () {
     });
 });
 
-describe('defineTest', function () {
+describe('define', function () {
 
     describe('signature one', function () {
         before(function () {
-            willy.defineTest(function equal99() {
+            willy.define(function equal99() {
                 return this.actual === 99;
             });
         });
@@ -839,7 +839,7 @@ describe('defineTest', function () {
 
     describe('signature two', function () {
         before(function () {
-            willy.defineTest({
+            willy.define({
                 fn: function equal99() {
                     return this.actual === 99;
                 }
@@ -860,6 +860,28 @@ describe('defineTest', function () {
             });
         });
     });
+});
+
+describe('loadDefinitions', function () {
+    before(function () {
+        willy.loadDefinitions({
+            equal99: {
+                fn: function () {
+                    return this.actual === 99;
+                }
+            }
+        });
+    });
+
+    after(function () {
+        delete will().constructor.prototype.equal99;
+    });
+
+    it('should work', function () {
+        assert.doesNotThrow(function () {
+            will(99).equal99();
+        });
+    });  
 });
 
 describe('working with promises', function () {

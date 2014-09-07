@@ -151,12 +151,15 @@ var allPropertiesExist = function (needles, hayStack) {
 };
 
 /**
-* Tests for an undefined item.
+* Throws error based on identity comparison.
+* @param {*} criterion
+* @return {Promise}
 */
-exports.exist = {
+exports.be = {
     fn: function () {
-        return this.actual !== undefined;    
-    }
+        return this.actual === this.expected;
+    },
+    explanation: E.STRICT_EQ
 };
 
 /**
@@ -182,35 +185,21 @@ exports.beAn = {
 };
 
 /**
-* Throw if the item in Question does not throw.
+* Tests to see if a value is defined.
 */
-exports.throw = {
+exports.beDefined = {
     fn: function () {
-        return mayThrow(this.actual);
+        return this.actual !== undefined;
     }
 };
 
 /**
-* Throws error based on equality comparison.
-* @param {*} criterion
+* Tests to see if a value is falsy.
 */
-exports.beLike = {
+exports.beFalsy = {
     fn: function () {
-        return this.actual == this.expected;
-    },
-    explanation: E.EQ
-};
-
-/**
-* Throws error based on identity comparison.
-* @param {*} criterion
-* @return {Promise}
-*/
-exports.be = {
-    fn: function () {
-        return this.actual === this.expected;
-    },
-    explanation: E.STRICT_EQ
+        return !this.actual;
+    }
 };
 
 /**
@@ -232,20 +221,22 @@ exports.beLessThan = {
 };
 
 /**
-* Tests to see if a value is falsy.
+* Throws error based on equality comparison.
+* @param {*} criterion
 */
-exports.beFalsy = {
+exports.beLike = {
     fn: function () {
-        return !this.actual;
-    }
+        return this.actual == this.expected;
+    },
+    explanation: E.EQ
 };
 
 /**
-* Tests to see if a value is truthy.
+* Tests to see if a value is greater than another.
 */
-exports.beTruthy = {
+exports.beMoreThan = {
     fn: function () {
-        return !!this.actual;
+        return this.actual > this.expected;
     }
 };
 
@@ -259,6 +250,15 @@ exports.beNull = {
 };
 
 /**
+* Tests to see if a value is truthy.
+*/
+exports.beTruthy = {
+    fn: function () {
+        return !!this.actual;
+    }
+};
+
+/**
 * Tests to see if a value is undefined.
 */
 exports.beUndefined = {
@@ -268,33 +268,27 @@ exports.beUndefined = {
 };
 
 /**
-* Tests to see if a value is defined.
+* Tests for an undefined item.
 */
-exports.beDefined = {
+exports.exist = {
     fn: function () {
-        return this.actual !== undefined;
+        return this.actual !== undefined;    
     }
 };
 
 /**
-* Tests a value against a Regular Expression.
-* @param {RegExp} regex
+* Tests to see if criteria are all in item.
+* @param {*} criteria
+* @throws {Error}
 */
-exports.match = {
-    fn: function match() {
-        return this.expected.test(this.actual);
-    }
-};
-
-/**
-* Checks for own properties.
-* @param {String} property
-*/
-exports.haveOwn = {
-    fn: function () {
-        return this.actual.hasOwnProperty(this.expected);
-    },
-    explanation: E.HAVE_OWN
+exports.have = {
+    fn: function have() {
+        if (!(this.expected instanceof Array)) {
+            this.expected = [this.expected];
+        }
+        return allPropertiesExist(this.expected, this.actual);
+    }, 
+    explanation: E.NOT_IN_ARR
 };
 
 /**
@@ -327,16 +321,31 @@ exports.haveOnly = {
 };
 
 /**
-* Tests to see if criteria are all in item.
-* @param {*} criteria
-* @throws {Error}
+* Checks for own properties.
+* @param {String} property
 */
-exports.have = {
-    fn: function have() {
-        if (!(this.expected instanceof Array)) {
-            this.expected = [this.expected];
-        }
-        return allPropertiesExist(this.expected, this.actual);
-    }, 
-    explanation: E.NOT_IN_ARR
+exports.haveOwn = {
+    fn: function () {
+        return this.actual.hasOwnProperty(this.expected);
+    },
+    explanation: E.HAVE_OWN
+};
+
+/**
+* Tests a value against a Regular Expression.
+* @param {RegExp} regex
+*/
+exports.match = {
+    fn: function match() {
+        return this.expected.test(this.actual);
+    }
+};
+
+/**
+* Throw if the item in Question does not throw.
+*/
+exports.throw = {
+    fn: function () {
+        return mayThrow(this.actual);
+    }
 };
