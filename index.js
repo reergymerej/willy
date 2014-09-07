@@ -46,6 +46,7 @@ var mayThrow = function (fn) {
 var Question = function (item, negative, eventual) {
 
     this.item = item;
+    this.actual = item;
 
     // TODO Making every permutation is dumb.  Be smarter.
     this.eventual = !!eventual;
@@ -65,6 +66,7 @@ var Question = function (item, negative, eventual) {
 * @param {Function} value, key - return false to stop
 */
 var forEach = function (item, fn) {
+    // TODO: use Object.keys, man
     var i,
         max;
 
@@ -171,149 +173,278 @@ var onlyThesePropsExist = function (needles, hayStack) {
     return result;
 };
 
+
+
+
+
+
+/**
+* Tests truth of an expression based on if the
+* Question has been negated.
+* @param {*} expression
+* @return {Boolean}
+*/
+Question.prototype.isTrue = function (expression) {
+    return this.negative ? !expression : !!expression;
+};
+
+/**
+* Get a formatted string for an error.
+* @param {String} comparison text version of comparison
+* @param {*} values item was tested against
+* @return {String}
+*/
+Question.prototype.getErrorMessage = function (comparison, values) {
+    var msg = 'expected <' + this.actual + '>';
+
+    if (this.negative) {
+        msg += ' not';
+    }
+
+    msg += ' to ' + this.explanation;
+
+    if (this.hasExpected) {
+        msg += ' <' + this.expected + '>';
+    }
+
+    return msg;
+};
+
+/**
+* @param {String} comparison text version of comparison
+* @param {*} values item was tested against
+* @return {Error}
+*/
+Question.prototype.getError = function (comparison, values) {
+    return new Error(this.getErrorMessage(comparison, values));
+};
+
+/**
+* Run the test and throw or return a promise.
+* @param {Function} testCallback
+* @param {String} message
+* @param {*} criteria
+*/
+Question.prototype.if = function (testCallback, message, criteria) {
+    var that = this;
+
+    if (this.eventual) {
+
+        return this.item.then(function (value) {
+
+            if (!that.isTrue(testCallback(value))) {
+                throw that.getError(message, criteria);
+            }
+
+        }, function (err) {
+            throw that.getError(message, criteria);
+        });
+    } else {
+
+        if (!this.isTrue(testCallback(this.item))) {
+            throw this.getError(message, criteria);
+        }
+    }
+};
+
+/**
+* @param {*} actual The value/function/expression being tested.
+* @return {Question}
+*/
+var will = function (actual) {
+    return new Question(actual);
+};
+
+var isPromise = function (x) {
+    return !!(x.constructor.prototype.catch &&
+            x.constructor.prototype.then);
+};
+
+/**
+* Derive an explanation from a function's name.
+* @param {String} name
+* @return {String}
+*/
+var getExplanation = function (name) {
+    var regex = /([a-z]+|[A-Z]|[0-9]+)/g;
+    var words = [];
+    var result = regex.exec(name);
+
+    while (result !== null) {
+        if (result.index) {
+            words.push(name.substr(0, result.index).toLowerCase());
+            name = name.substr(result.index);
+        }
+        
+        result = regex.exec(name);
+    }
+
+    if (!words.length) {
+        words = [name];
+    }
+
+    return words.join(' ');
+};
+
+/**
+* Add a new test to the Question prototype.
+* @param {Function} a named function
+* @deprecated use #test instead
+*/
+var addTest = function (fn) {
+    Question.prototype[fn.name] = fn;
+};
+
+/**
+* Add a new test to the Question prototype.
+* @param {Function} fn a named function
+* @param {String} [explanation] what you were expecting to be true
+* If omitted, it will be constructed from the name of fn.
+*/
+var writeTest = function (fn, explanation) {
+
+    explanation = explanation || getExplanation(fn.name);
+
+    // Wrap the test in another function so we can
+    // inject the actual and expected values.
+    Question.prototype[fn.name] = function (expected) {
+
+        var that = this;
+        
+        that.expected = expected;
+        that.hasExpected = arguments.length > 0;
+        that.explanation = explanation;
+
+        this.if(
+            function () {
+                // Run the test using the Question's scope
+                // to inject the values.
+                return fn.call(that, expected);
+            }
+        );
+
+        return this.prototype;
+    };
+};
+
+exports.will = will;
+exports.addTest = addTest;
+exports.writeTest = writeTest;
+
+
+// ================================================
+
+
+
 /**
 * Tests to see if criteria are all in item.
 * @param {*} criteria
 * @throws {Error}
 */
-Question.prototype.have = function (criteria) {
+writeTest(function have() {
+    if (!(this.expected instanceof Array)) {
+        this.expected = [this.expected];
+    }
+    return allPropertiesExist(this.expected, this.actual);
+}, E.NOT_IN_ARR);
 
-    // var isArray = this.item instanceof Array;
-    // var message = isArray ? E.NOT_IN_ARR : E.NOT_IN_OBJ;
-
-    criteria = (criteria instanceof Array) ?
-        criteria : [criteria];
-
-    return this.if(function (val) {
-        return allPropertiesExist(criteria, val);
-    }, E.NOT_IN_ARR, criteria);
-};
 
 /**
 * Check for existence of only specified items.
 * @param {*} criteria
 */
-Question.prototype.haveOnly = function (criteria) {
-    
-    // var isArray = this.item instanceof Array;
-    // var message = isArray ? E.ARR_HAS_EXTRA : E.OBJ_HAS_EXTRA;
-
-    criteria = (criteria instanceof Array) ?
-        criteria : [criteria];
-
-    return this.if(function (val) {
-        return onlyThesePropsExist(criteria, val);
-    }, E.ARR_HAS_EXTRA, criteria);
-};
+writeTest(function haveOnly() {
+    if (!(this.expected instanceof Array)) {
+        this.expected = [this.expected];
+    }
+    return onlyThesePropsExist(this.expected, this.actual);
+}, E.ARR_HAS_EXTRA);
 
 /**
 * Check for existence of any properties in item.
 * @param {String/String[]} props
 */
-Question.prototype.haveAny = function (props) {
-    return this.if(function (val) {
-        // var isArray = val instanceof Array;
-        // var message = isArray ? E.HAVE_ANY_ARR : E.HAVE_ANY_OBJ;
-        
-        props = props instanceof Array ? props : [props];
+writeTest(function haveAny() {
+    if (!(this.expected instanceof Array)) {
+        this.expected = [this.expected];
+    }
 
-        return anyPropExists(props, val);
-    }, E.HAVE_ANY_ARR, props);
-};
+    return anyPropExists(this.expected, this.actual);
+}, E.HAVE_ANY_ARR);
 
 /**
 * Checks for own properties.
 * @param {String} property
 */
-Question.prototype.haveOwn = function (property) {
-    return this.if(function (val) {
-        return val.hasOwnProperty(property);
-    }, E.HAVE_OWN, property);
-};
+writeTest(function haveOwn() {
+    return this.actual.hasOwnProperty(this.expected);
+}, E.HAVE_OWN);
 
 /**
 * Tests a value against a Regular Expression.
 * @param {RegExp} regex
 */
-Question.prototype.match = function (regex) {
-    return this.if(function (val) {
-        return regex.test(val);
-    }, E.MATCH, regex);
-};
+writeTest(function match() {
+    return this.expected.test(this.actual);
+});
 
 /**
 * Tests to see if a value is defined.
 */
-Question.prototype.beDefined = function () {
-    return this.if(function (val) {
-        return val !== undefined;
-    }, E.BE_DEFINED);
-};
+writeTest(function beDefined() {
+    return this.actual !== undefined;
+});
 
 /**
 * Tests to see if a value is undefined.
 */
-Question.prototype.beUndefined = function () {
-    return this.if(function (val) {
-        return val === undefined;
-    }, E.BE_UNDEFINED);
-};
+writeTest(function beUndefined() {
+    return this.actual === undefined;
+});
 
 /**
 * Tests to see if a value is null.
 */
-Question.prototype.beNull = function () {
-    return this.if(function (val) {
-        return val === null;
-    }, E.BE_NULL);
-};
+writeTest(function beNull() {
+    return this.actual === null;
+});
 
 /**
 * Tests to see if a value is truthy.
 */
-Question.prototype.beTruthy = function () {
-    return this.if(function (val) {
-        return !!val;
-    }, E.BE_TRUTHY);
-};
+writeTest(function beTruthy() {
+    return !!this.actual;
+});
 
 /**
 * Tests to see if a value is falsy.
 */
-Question.prototype.beFalsy = function () {
-    return this.if(function (val) {
-        return !val;
-    }, E.BE_FALSY);
-};
+writeTest(function beFalsy() {
+    return !this.actual;
+});
 
 /**
 * Tests to see if a value is less than another.
 */
-Question.prototype.beLessThan = function (expected) {
-    return this.if(function (actual) {
-        return actual < expected;
-    }, E.BE_LESS_THAN, expected);
-};
+writeTest(function beLessThan() {
+    return this.actual < this.expected;
+});
 
 /**
 * Tests to see if a value is greater than another.
 */
-Question.prototype.beGreaterThan = function (expected) {
-    return this.if(function (actual) {
-        return actual > expected;
-    }, E.BE_GREATER_THAN, expected);
-};
+writeTest(function beGreaterThan() {
+    return this.actual > this.expected;
+});
 
 /**
 * Throws error based on identity comparison.
 * @param {*} criterion
 * @return {Promise}
 */
-Question.prototype.be = function (criterion) {
-    return this.if(function (value) {
-            return value === criterion;
-        }, E.STRICT_EQ, criterion);
-};
+writeTest(function be() {
+    return this.actual === this.expected;
+}, E.STRICT_EQ);
 
 /**
 * Throws error based on equality comparison.
@@ -353,92 +484,3 @@ Question.prototype.exist = function () {
         return val !== undefined;
     }, E.UNDEF);
 };
-
-/**
-* Tests truth of an expression based on if the
-* Question has been negated.
-* @param {*} expression
-* @return {Boolean}
-*/
-Question.prototype.isTrue = function (expression) {
-    return this.negative ? !expression : !!expression;
-};
-
-/**
-* Get a formatted string for an error.
-* @param {String} comparison text version of comparison
-* @param {*} values item was tested against
-* @return {String}
-*/
-Question.prototype.getErrorMessage = function (comparison, values) {
-    var msg = 'expected <' + this.item + '>' +
-        (this.negative ? ' not' : '') + ' to ' +
-        comparison;
-
-    if (values !== undefined) {
-        msg += ' <' + values + '>';
-    }
-
-    return msg;
-};
-
-/**
-* @param {String} comparison text version of comparison
-* @param {*} values item was tested against
-* @return {Error}
-*/
-Question.prototype.getError = function (comparison, values) {
-    return new Error(this.getErrorMessage(comparison, values));
-};
-
-/**
-* Run the test and throw or return a promise.
-* @param {Function} testCallback
-* @param {String} message
-* @param {*} criteria
-*/
-Question.prototype.if = function (testCallback, message, criteria) {
-    var that = this;
-
-    if (this.eventual) {
-
-        return this.item.then(function (value) {
-
-            if (!that.isTrue(testCallback(value))) {
-                throw that.getError(message, criteria);
-            }
-
-        }, function (err) {
-            console.log('an error', err);
-            throw that.getError(message, criteria);
-        });
-    } else {
-        if (!that.isTrue(testCallback(this.item))) {
-            throw this.getError(message, criteria);
-        }
-    }
-};
-
-/**
-* @param {Array} interrogated
-* @return {Question}
-*/
-var will = function (interrogated) {
-    return new Question(interrogated);
-};
-
-var isPromise = function (x) {
-    return !!(x.constructor.prototype.catch &&
-            x.constructor.prototype.then);
-};
-
-/**
-* Add a new test to the Question prototype.
-* @param {Function} a named function
-*/
-var addTest = function (fn) {
-    Question.prototype[fn.name] = fn;
-};
-
-exports.will = will;
-exports.addTest = addTest;
