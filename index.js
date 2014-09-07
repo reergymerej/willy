@@ -319,6 +319,7 @@ var getExplanation = function (name) {
 * @deprecated use #test instead
 */
 var addTest = function (fn) {
+    console.warn('Don\'t use addTest.  Use defineTest instead.');
     Question.prototype[fn.name] = fn;
 };
 
@@ -330,7 +331,7 @@ var addTest = function (fn) {
 * @param {String} [fnName] Use when you want to use a reserved word
 * for your test's name.
 */
-var writeTest = function (fn, explanation, fnName) {
+var defineTest = function (fn, explanation, fnName) {
 
     explanation = explanation || getExplanation(fn.name);
     fnName = fnName || fn.name;
@@ -357,7 +358,7 @@ var writeTest = function (fn, explanation, fnName) {
 
 exports.will = will;
 exports.addTest = addTest;
-exports.writeTest = writeTest;
+exports.defineTest = defineTest;
 
 
 // ================================================
@@ -369,7 +370,7 @@ exports.writeTest = writeTest;
 * @param {*} criteria
 * @throws {Error}
 */
-writeTest(function have() {
+defineTest(function have() {
     if (!(this.expected instanceof Array)) {
         this.expected = [this.expected];
     }
@@ -381,7 +382,7 @@ writeTest(function have() {
 * Check for existence of only specified items.
 * @param {*} criteria
 */
-writeTest(function haveOnly() {
+defineTest(function haveOnly() {
     if (!(this.expected instanceof Array)) {
         this.expected = [this.expected];
     }
@@ -392,7 +393,7 @@ writeTest(function haveOnly() {
 * Check for existence of any properties in item.
 * @param {String/String[]} props
 */
-writeTest(function haveAny() {
+defineTest(function haveAny() {
     if (!(this.expected instanceof Array)) {
         this.expected = [this.expected];
     }
@@ -404,7 +405,7 @@ writeTest(function haveAny() {
 * Checks for own properties.
 * @param {String} property
 */
-writeTest(function haveOwn() {
+defineTest(function haveOwn() {
     return this.actual.hasOwnProperty(this.expected);
 }, E.HAVE_OWN);
 
@@ -412,56 +413,56 @@ writeTest(function haveOwn() {
 * Tests a value against a Regular Expression.
 * @param {RegExp} regex
 */
-writeTest(function match() {
+defineTest(function match() {
     return this.expected.test(this.actual);
 });
 
 /**
 * Tests to see if a value is defined.
 */
-writeTest(function beDefined() {
+defineTest(function beDefined() {
     return this.actual !== undefined;
 });
 
 /**
 * Tests to see if a value is undefined.
 */
-writeTest(function beUndefined() {
+defineTest(function beUndefined() {
     return this.actual === undefined;
 });
 
 /**
 * Tests to see if a value is null.
 */
-writeTest(function beNull() {
+defineTest(function beNull() {
     return this.actual === null;
 });
 
 /**
 * Tests to see if a value is truthy.
 */
-writeTest(function beTruthy() {
+defineTest(function beTruthy() {
     return !!this.actual;
 });
 
 /**
 * Tests to see if a value is falsy.
 */
-writeTest(function beFalsy() {
+defineTest(function beFalsy() {
     return !this.actual;
 });
 
 /**
 * Tests to see if a value is less than another.
 */
-writeTest(function beLessThan() {
+defineTest(function beLessThan() {
     return this.actual < this.expected;
 });
 
 /**
 * Tests to see if a value is greater than another.
 */
-writeTest(function beGreaterThan() {
+defineTest(function beGreaterThan() {
     return this.actual > this.expected;
 });
 
@@ -470,7 +471,7 @@ writeTest(function beGreaterThan() {
 * @param {*} criterion
 * @return {Promise}
 */
-writeTest(function be() {
+defineTest(function be() {
     return this.actual === this.expected;
 }, E.STRICT_EQ);
 
@@ -478,14 +479,14 @@ writeTest(function be() {
 * Throws error based on equality comparison.
 * @param {*} criterion
 */
-writeTest(function beLike() {
+defineTest(function beLike() {
     return this.actual == this.expected;
 }, E.EQ);
 
 /**
 * Throw if the item in Question does not throw.
 */
-writeTest(function () {
+defineTest(function () {
     return mayThrow(this.actual);
 }, null, 'throw');
 
@@ -493,17 +494,17 @@ writeTest(function () {
 * Tests inheritance
 * @param {Function} criterion
 */
-writeTest(function beA() {
+defineTest(function beA() {
     return this.actual instanceof this.expected;
 }, E.INST);
 
-writeTest(function beAn() {
+defineTest(function beAn() {
     return this.actual instanceof this.expected;
 }, E.INST);
 
 /**
 * Tests for an undefined item.
 */
-writeTest(function exist() {
+defineTest(function exist() {
     return this.actual !== undefined;
 }, E.UNDEF);
