@@ -1,6 +1,8 @@
 'use strict';
 
 var Q = require('q');
+var path = require('path');
+var fs = require('fs');
 
 var E = {
     UNDEF: 'exist',
@@ -25,18 +27,20 @@ var E = {
     BE_GREATER_THAN: 'be greater than'
 };
 
-/**
-* @return {Boolean} error thrown
-*/
-var mayThrow = function (fn) {
-    var threw;
-    try {
-        fn();
-    } catch (e) {
-        threw = true;
-    }
-    
-    return threw;
+var loadTests = function () {
+    var pathname = path.join(__dirname, 'willy-tests.js');
+    var willyTests = require('./willy-tests.js');
+    Object.keys(willyTests).forEach(function (test) {
+        var definition = willyTests[test];
+
+        defineTest(
+            definition.fn,
+            definition.explanation,
+            definition.name || definition.fn.name || test
+        );
+    });
+
+    console.log('tests loaded');
 };
 
 /**
@@ -60,124 +64,6 @@ var Question = function (item, negative, eventual) {
         this.not = new Question(item, true, eventual);
     }
 };
-
-/**
-* Execute a function for each item.
-* @param {Object/Array} item
-* @param {Function} value, key - return false to stop
-*/
-var forEach = function (item, fn) {
-    // TODO: use Object.keys, man
-    var i,
-        max;
-
-    if (item instanceof Array) {
-        for (i = 0, max = item.length; i < max; i++) {
-            if (fn(item[i], i) === false) {
-                break;
-            }
-        }
-    } else {
-        for (i in item) {
-            if (item.hasOwnProperty(i)) {
-                if (fn(item[i], i) === false) {
-                    break;
-                }
-            }
-        }
-    }
-};
-
-/**
-* Test for the presence of properties in an Object or Array.
-* @param {Array} needles
-* @param {Array/Object} collection
-* @param {Boolean} all Only return true if all needles are found.
-* @return {Boolean}
-*/
-var propertiesExist = function (needles, hayStack, all) {
-    var result = true,
-        isArray = hayStack instanceof Array,
-        found;
-
-    forEach(needles, function (value, key) {
-
-        if (isArray) {
-            found = hayStack.indexOf(value) !== -1;
-        } else {
-            found = hayStack[value] !== undefined;
-        }
-
-        if (all && !found) {
-            result = false;
-            return false;
-        }
-    });
-
-    return result;
-};
-
-var allPropertiesExist = function (needles, hayStack) {
-    return propertiesExist(needles, hayStack, true);
-};
-
-/**
-* Test for the presence at least one property in an Object or Array.
-* @param {Array} needles
-* @param {Array/Object} collection
-* @return {Boolean}
-*/
-var anyPropExists = function (needles, hayStack) {
-    var result = false,
-        isArray = hayStack instanceof Array;
-
-    forEach(needles, function (value, key) {
-
-        if (isArray) {
-            result = hayStack.indexOf(value) !== -1;
-        } else {
-            result = hayStack[value] !== undefined;
-        }
-
-        return !result;
-    });
-
-    return result;
-};
-
-/**
-* Test for the presence of properties unspecified properties.
-* @param {String[]} needles
-* @param {Array/Object} collection
-* @return {Boolean}
-*/
-var onlyThesePropsExist = function (needles, hayStack) {
-    var result = true,
-        isArray = hayStack instanceof Array;
-
-    forEach(hayStack, function (value, key) {
-        var isNeedle;
-        
-        if (isArray) {
-            isNeedle = needles.indexOf(value) !== -1;
-        } else {
-            isNeedle = needles.indexOf(key) !== -1;
-        }
-
-        if (!isNeedle) {
-            result = false;
-        }
-
-        return isNeedle;
-    });
-
-    return result;
-};
-
-
-
-
-
 
 /**
 * Tests truth of an expression based on if the
@@ -282,11 +168,6 @@ var will = function (actual) {
     return new Question(actual);
 };
 
-var isPromise = function (x) {
-    return !!(x.constructor.prototype.catch &&
-            x.constructor.prototype.then);
-};
-
 /**
 * Derive an explanation from a function's name.
 * @param {String} name
@@ -333,8 +214,13 @@ var addTest = function (fn) {
 */
 var defineTest = function (fn, explanation, fnName) {
 
-    explanation = explanation || getExplanation(fn.name);
     fnName = fnName || fn.name;
+    explanation = explanation || getExplanation(fnName);
+
+    if (!fnName) {
+        console.error(fn.toString());
+        throw new Error('This test has no name.');
+    }
 
     // Wrap the test in another function so we can
     // inject the actual and expected values.
@@ -356,155 +242,9 @@ var defineTest = function (fn, explanation, fnName) {
     };
 };
 
+loadTests();
+
+
 exports.will = will;
 exports.addTest = addTest;
 exports.defineTest = defineTest;
-
-
-// ================================================
-
-
-
-/**
-* Tests to see if criteria are all in item.
-* @param {*} criteria
-* @throws {Error}
-*/
-defineTest(function have() {
-    if (!(this.expected instanceof Array)) {
-        this.expected = [this.expected];
-    }
-    return allPropertiesExist(this.expected, this.actual);
-}, E.NOT_IN_ARR);
-
-
-/**
-* Check for existence of only specified items.
-* @param {*} criteria
-*/
-defineTest(function haveOnly() {
-    if (!(this.expected instanceof Array)) {
-        this.expected = [this.expected];
-    }
-    return onlyThesePropsExist(this.expected, this.actual);
-}, E.ARR_HAS_EXTRA);
-
-/**
-* Check for existence of any properties in item.
-* @param {String/String[]} props
-*/
-defineTest(function haveAny() {
-    if (!(this.expected instanceof Array)) {
-        this.expected = [this.expected];
-    }
-
-    return anyPropExists(this.expected, this.actual);
-}, E.HAVE_ANY_ARR);
-
-/**
-* Checks for own properties.
-* @param {String} property
-*/
-defineTest(function haveOwn() {
-    return this.actual.hasOwnProperty(this.expected);
-}, E.HAVE_OWN);
-
-/**
-* Tests a value against a Regular Expression.
-* @param {RegExp} regex
-*/
-defineTest(function match() {
-    return this.expected.test(this.actual);
-});
-
-/**
-* Tests to see if a value is defined.
-*/
-defineTest(function beDefined() {
-    return this.actual !== undefined;
-});
-
-/**
-* Tests to see if a value is undefined.
-*/
-defineTest(function beUndefined() {
-    return this.actual === undefined;
-});
-
-/**
-* Tests to see if a value is null.
-*/
-defineTest(function beNull() {
-    return this.actual === null;
-});
-
-/**
-* Tests to see if a value is truthy.
-*/
-defineTest(function beTruthy() {
-    return !!this.actual;
-});
-
-/**
-* Tests to see if a value is falsy.
-*/
-defineTest(function beFalsy() {
-    return !this.actual;
-});
-
-/**
-* Tests to see if a value is less than another.
-*/
-defineTest(function beLessThan() {
-    return this.actual < this.expected;
-});
-
-/**
-* Tests to see if a value is greater than another.
-*/
-defineTest(function beGreaterThan() {
-    return this.actual > this.expected;
-});
-
-/**
-* Throws error based on identity comparison.
-* @param {*} criterion
-* @return {Promise}
-*/
-defineTest(function be() {
-    return this.actual === this.expected;
-}, E.STRICT_EQ);
-
-/**
-* Throws error based on equality comparison.
-* @param {*} criterion
-*/
-defineTest(function beLike() {
-    return this.actual == this.expected;
-}, E.EQ);
-
-/**
-* Throw if the item in Question does not throw.
-*/
-defineTest(function () {
-    return mayThrow(this.actual);
-}, null, 'throw');
-
-/**
-* Tests inheritance
-* @param {Function} criterion
-*/
-defineTest(function beA() {
-    return this.actual instanceof this.expected;
-}, E.INST);
-
-defineTest(function beAn() {
-    return this.actual instanceof this.expected;
-}, E.INST);
-
-/**
-* Tests for an undefined item.
-*/
-defineTest(function exist() {
-    return this.actual !== undefined;
-}, E.UNDEF);
