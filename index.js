@@ -1,41 +1,21 @@
 'use strict';
-var Q = require('q');
 
-var E = {
-    UNDEF: 'exist',
-    INST: 'be an instance of',
-    THROW: 'throw an error',
-    NOT_IN_ARR: 'have all of these items:',
-    EQ: 'be like',
-    STRICT_EQ: 'strictly equal',
-    NOT_IN_OBJ: 'have all of these properties:',
-    HAVE_OWN: 'have own',
-    HAVE_ANY_OBJ: 'have any of these properties:',
-    HAVE_ANY_ARR: 'have any of these items:',
-    ARR_HAS_EXTRA: 'have only these items:',
-    OBJ_HAS_EXTRA: 'have only these properties:',
-    MATCH: 'match RegExp:',
-    BE_DEFINED: 'be defined',
-    BE_UNDEFINED: 'be defined',
-    BE_NULL: 'be null',
-    BE_TRUTHY: 'be truthy',
-    BE_FALSY: 'be falsy',
-    BE_LESS_THAN: 'be less than',
-    BE_GREATER_THAN: 'be greater than'
+var Q = require('q');
+var util = require('util');
+
+var loadBuiltinTests = function () {
+    loadDefinitions(require('./willy-tests.js'));
 };
 
 /**
-* @return {Boolean} error thrown
+* @param {Object}
 */
-var mayThrow = function (fn) {
-    var threw;
-    try {
-        fn();
-    } catch (e) {
-        threw = true;
-    }
-    
-    return threw;
+var loadDefinitions = function (tests) {
+    Object.keys(tests).forEach(function (test) {
+        var definition = tests[test];
+        definition.name = definition.name || definition.fn.name  || test;
+        define(definition);
+    });
 };
 
 /**
@@ -46,6 +26,7 @@ var mayThrow = function (fn) {
 var Question = function (item, negative, eventual) {
 
     this.item = item;
+    this.actual = item;
 
     // TODO Making every permutation is dumb.  Be smarter.
     this.eventual = !!eventual;
@@ -57,301 +38,6 @@ var Question = function (item, negative, eventual) {
     if (!this.negative) {
         this.not = new Question(item, true, eventual);
     }
-};
-
-/**
-* Execute a function for each item.
-* @param {Object/Array} item
-* @param {Function} value, key - return false to stop
-*/
-var forEach = function (item, fn) {
-    var i,
-        max;
-
-    if (item instanceof Array) {
-        for (i = 0, max = item.length; i < max; i++) {
-            if (fn(item[i], i) === false) {
-                break;
-            }
-        }
-    } else {
-        for (i in item) {
-            if (item.hasOwnProperty(i)) {
-                if (fn(item[i], i) === false) {
-                    break;
-                }
-            }
-        }
-    }
-};
-
-/**
-* Test for the presence of properties in an Object or Array.
-* @param {Array} needles
-* @param {Array/Object} collection
-* @param {Boolean} all Only return true if all needles are found.
-* @return {Boolean}
-*/
-var propertiesExist = function (needles, hayStack, all) {
-    var result = true,
-        isArray = hayStack instanceof Array,
-        found;
-
-    forEach(needles, function (value, key) {
-
-        if (isArray) {
-            found = hayStack.indexOf(value) !== -1;
-        } else {
-            found = hayStack[value] !== undefined;
-        }
-
-        if (all && !found) {
-            result = false;
-            return false;
-        }
-    });
-
-    return result;
-};
-
-var allPropertiesExist = function (needles, hayStack) {
-    return propertiesExist(needles, hayStack, true);
-};
-
-/**
-* Test for the presence at least one property in an Object or Array.
-* @param {Array} needles
-* @param {Array/Object} collection
-* @return {Boolean}
-*/
-var anyPropExists = function (needles, hayStack) {
-    var result = false,
-        isArray = hayStack instanceof Array;
-
-    forEach(needles, function (value, key) {
-
-        if (isArray) {
-            result = hayStack.indexOf(value) !== -1;
-        } else {
-            result = hayStack[value] !== undefined;
-        }
-
-        return !result;
-    });
-
-    return result;
-};
-
-/**
-* Test for the presence of properties unspecified properties.
-* @param {String[]} needles
-* @param {Array/Object} collection
-* @return {Boolean}
-*/
-var onlyThesePropsExist = function (needles, hayStack) {
-    var result = true,
-        isArray = hayStack instanceof Array;
-
-    forEach(hayStack, function (value, key) {
-        var isNeedle;
-        
-        if (isArray) {
-            isNeedle = needles.indexOf(value) !== -1;
-        } else {
-            isNeedle = needles.indexOf(key) !== -1;
-        }
-
-        if (!isNeedle) {
-            result = false;
-        }
-
-        return isNeedle;
-    });
-
-    return result;
-};
-
-/**
-* Tests to see if criteria are all in item.
-* @param {*} criteria
-* @throws {Error}
-*/
-Question.prototype.have = function (criteria) {
-
-    // var isArray = this.item instanceof Array;
-    // var message = isArray ? E.NOT_IN_ARR : E.NOT_IN_OBJ;
-
-    criteria = (criteria instanceof Array) ?
-        criteria : [criteria];
-
-    return this.if(function (val) {
-        return allPropertiesExist(criteria, val);
-    }, E.NOT_IN_ARR, criteria);
-};
-
-/**
-* Check for existence of only specified items.
-* @param {*} criteria
-*/
-Question.prototype.haveOnly = function (criteria) {
-    
-    // var isArray = this.item instanceof Array;
-    // var message = isArray ? E.ARR_HAS_EXTRA : E.OBJ_HAS_EXTRA;
-
-    criteria = (criteria instanceof Array) ?
-        criteria : [criteria];
-
-    return this.if(function (val) {
-        return onlyThesePropsExist(criteria, val);
-    }, E.ARR_HAS_EXTRA, criteria);
-};
-
-/**
-* Check for existence of any properties in item.
-* @param {String/String[]} props
-*/
-Question.prototype.haveAny = function (props) {
-    return this.if(function (val) {
-        // var isArray = val instanceof Array;
-        // var message = isArray ? E.HAVE_ANY_ARR : E.HAVE_ANY_OBJ;
-        
-        props = props instanceof Array ? props : [props];
-
-        return anyPropExists(props, val);
-    }, E.HAVE_ANY_ARR, props);
-};
-
-/**
-* Checks for own properties.
-* @param {String} property
-*/
-Question.prototype.haveOwn = function (property) {
-    return this.if(function (val) {
-        return val.hasOwnProperty(property);
-    }, E.HAVE_OWN, property);
-};
-
-/**
-* Tests a value against a Regular Expression.
-* @param {RegExp} regex
-*/
-Question.prototype.match = function (regex) {
-    return this.if(function (val) {
-        return regex.test(val);
-    }, E.MATCH, regex);
-};
-
-/**
-* Tests to see if a value is defined.
-*/
-Question.prototype.beDefined = function () {
-    return this.if(function (val) {
-        return val !== undefined;
-    }, E.BE_DEFINED);
-};
-
-/**
-* Tests to see if a value is undefined.
-*/
-Question.prototype.beUndefined = function () {
-    return this.if(function (val) {
-        return val === undefined;
-    }, E.BE_UNDEFINED);
-};
-
-/**
-* Tests to see if a value is null.
-*/
-Question.prototype.beNull = function () {
-    return this.if(function (val) {
-        return val === null;
-    }, E.BE_NULL);
-};
-
-/**
-* Tests to see if a value is truthy.
-*/
-Question.prototype.beTruthy = function () {
-    return this.if(function (val) {
-        return !!val;
-    }, E.BE_TRUTHY);
-};
-
-/**
-* Tests to see if a value is falsy.
-*/
-Question.prototype.beFalsy = function () {
-    return this.if(function (val) {
-        return !val;
-    }, E.BE_FALSY);
-};
-
-/**
-* Tests to see if a value is less than another.
-*/
-Question.prototype.beLessThan = function (expected) {
-    return this.if(function (actual) {
-        return actual < expected;
-    }, E.BE_LESS_THAN, expected);
-};
-
-/**
-* Tests to see if a value is greater than another.
-*/
-Question.prototype.beGreaterThan = function (expected) {
-    return this.if(function (actual) {
-        return actual > expected;
-    }, E.BE_GREATER_THAN, expected);
-};
-
-/**
-* Throws error based on identity comparison.
-* @param {*} criterion
-* @return {Promise}
-*/
-Question.prototype.be = function (criterion) {
-    return this.if(function (value) {
-            return value === criterion;
-        }, E.STRICT_EQ, criterion);
-};
-
-/**
-* Throws error based on equality comparison.
-* @param {*} criterion
-*/
-Question.prototype.beLike = function (criterion) {
-    return this.if(function (val) {
-        return val == criterion;
-    }, E.EQ, criterion);
-};
-
-/**
-* Throw if the item in Question does not throw.
-*/
-Question.prototype.throw = function () {
-    return this.if(function (val) {
-        return mayThrow(val);
-    }, E.THROW);
-};
-
-/**
-* Tests inheritance
-* @param {Function} criterion
-*/
-Question.prototype.beA = 
-    Question.prototype.beAn = function (criterion) {
-        return this.if(function (val) {
-            return val instanceof criterion;
-        }, E.INST, criterion.name);
-};
-
-/**
-* Tests for an undefined item.
-*/
-Question.prototype.exist = function () {
-    return this.if(function (val) {
-        return val !== undefined;
-    }, E.UNDEF);
 };
 
 /**
@@ -371,12 +57,16 @@ Question.prototype.isTrue = function (expression) {
 * @return {String}
 */
 Question.prototype.getErrorMessage = function (comparison, values) {
-    var msg = 'expected <' + this.item + '>' +
-        (this.negative ? ' not' : '') + ' to ' +
-        comparison;
+    var msg = 'expected ' + util.inspect(this.actual);
 
-    if (values !== undefined) {
-        msg += ' <' + values + '>';
+    if (this.negative) {
+        msg += ' not';
+    }
+
+    msg += ' to ' + this.explanation;
+
+    if (this.hasExpected) {
+        msg += ' ' + util.inspect(this.expected);
     }
 
     return msg;
@@ -396,49 +86,150 @@ Question.prototype.getError = function (comparison, values) {
 * @param {Function} testCallback
 * @param {String} message
 * @param {*} criteria
+* @return {Q.Promise/Question} When `eventually` is used, this is a Q.Promise.
+* Otherwise, this is a `Question`.
 */
 Question.prototype.if = function (testCallback, message, criteria) {
     var that = this;
 
     if (this.eventual) {
+        // `this.item` is a promise
 
-        return this.item.then(function (value) {
+        // Return our own promise so we can deal with the
+        // promise being tested.
+        return Q.Promise(function (resolve, reject) {
 
-            if (!that.isTrue(testCallback(value))) {
-                throw that.getError(message, criteria);
-            }
+            // Add to the end of the test's promise so we can
+            // get the resolved value.
+            that.item.then(
 
-        }, function (err) {
-            console.log('an error', err);
-            throw that.getError(message, criteria);
+                // promise fulfilled, let's test it
+                function (value) {
+
+                    // Now that the promise has been fulfilled,
+                    // change `this.actual` to the value, rather than
+                    // the promise.
+                    that.promise = that.actual;
+                    that.actual = value;
+
+                    if (!that.isTrue(testCallback())) {
+                        reject(that.getErrorMessage(message));
+                    } else {
+                        resolve(that.actual);
+                    }
+                },
+
+                // The promise threw an error.
+                function (err) {
+                    reject('You broke your promise. :(\n"' + err + '"');
+                }
+            );
         });
     } else {
-        if (!that.isTrue(testCallback(this.item))) {
+
+        if (!this.isTrue(testCallback(this.item))) {
             throw this.getError(message, criteria);
+        } else {
+            return this;
         }
     }
 };
 
 /**
-* @param {Array} interrogated
+* @param {*} actual The value/function/expression being tested.
 * @return {Question}
 */
-var will = function (interrogated) {
-    return new Question(interrogated);
+var will = function (actual) {
+    return new Question(actual);
 };
 
-var isPromise = function (x) {
-    return !!(x.constructor.prototype.catch &&
-            x.constructor.prototype.then);
+/**
+* Derive an explanation from a function's name.
+* @param {String} name
+* @return {String}
+*/
+var getExplanation = function (name) {
+    var regex = /([A-Z]|[0-9]+)/g;
+    var indices = [0];
+    var words = [];
+    var result = regex.exec(name);
+    var index;
+
+    while (result !== null) {
+        indices.push(result.index);
+        result = regex.exec(name);
+    }
+
+    // chop at the indices
+    indices.forEach(function (from, index, collection) {
+        var to = collection[index + 1];
+        var length = to && to - from;
+
+        words.push(name.substr(from, length).toLowerCase());
+    });
+
+    return words.join(' ');
 };
 
 /**
 * Add a new test to the Question prototype.
 * @param {Function} a named function
+* @deprecated use #test instead
 */
 var addTest = function (fn) {
+    console.warn('Don\'t use addTest.  Use define instead.');
     Question.prototype[fn.name] = fn;
 };
 
+/**
+* Add a new test to the Question prototype.
+* @param {Function/Object} fn a named function; If using an object, 
+* pass params as properties of the object.
+* @param {String} [explanation] what you were expecting to be true
+* If omitted, it will be constructed from the name of fn.
+* @param {String} [fnName] Use when you want to use a reserved word
+* for your test's name.
+*/
+var define = function (fn, explanation, fnName) {
+
+    // Handle alternate signature.
+    if (typeof fn === 'object') {
+        fnName = fn.name;
+        explanation = fn.explanation;
+        fn = fn.fn;
+    }
+
+    fnName = fnName || fn.name;
+    explanation = explanation || getExplanation(fnName);
+
+    if (!fnName) {
+        console.error(fn.toString());
+        throw new Error('This test has no name.');
+    }
+
+    // Wrap the test in another function so we can
+    // inject the actual and expected values.
+    Question.prototype[fnName] = function (expected) {
+
+        var that = this;
+        
+        that.expected = expected;
+        that.hasExpected = arguments.length > 0;
+        that.explanation = explanation;
+
+        return this.if(
+            function () {
+                // Run the test using the Question's scope
+                // to inject the values.
+                return fn.call(that, expected);
+            }
+        );
+    };
+};
+
+loadBuiltinTests();
+
 exports.will = will;
 exports.addTest = addTest;
+exports.define = define;
+exports.loadDefinitions = loadDefinitions;

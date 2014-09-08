@@ -49,11 +49,6 @@ describe('beLike', function () {
 });
 
 describe('beA/beAn', function () {
-    it('should be the same as beAn', function () {
-        var question = will();
-        assert.strictEqual(question.beA, question.beAn);
-    });
-
     it('should not throw if is an instanceof', function () {
         assert.doesNotThrow(function () {
             will([]).beAn(Array);
@@ -64,6 +59,12 @@ describe('beA/beAn', function () {
         assert.throws(function () {
             will([]).beA(String);
         });
+    });
+
+    it('should work for regular inheritance', function () {
+        var Foo = function () {};
+        var foo = new Foo();
+        will(foo).beA(Foo);
     });
 });
 
@@ -818,9 +819,80 @@ describe('addTest', function () {
     });
 });
 
+describe('define', function () {
+
+    describe('signature one', function () {
+        before(function () {
+            willy.define(function equal99() {
+                return this.actual === 99;
+            });
+        });
+
+        after(function () {
+            delete will().constructor.prototype.equal99;
+        });
+
+        it('should allow you to add a test to Willy\'s repertoire', function () {
+            assert.doesNotThrow(function () {
+                will(99).equal99(99);
+            });
+
+            assert.throws(function () {
+                will(99).not.equal99(99);
+            });
+        });
+    });
+
+    describe('signature two', function () {
+        before(function () {
+            willy.define({
+                fn: function equal99() {
+                    return this.actual === 99;
+                }
+            });
+        });
+
+        after(function () {
+            delete will().constructor.prototype.equal99;
+        });
+
+        it('should allow you to add a test to Willy\'s repertoire', function () {
+            assert.doesNotThrow(function () {
+                will(99).equal99(99);
+            });
+
+            assert.throws(function () {
+                will(99).not.equal99(99);
+            });
+        });
+    });
+});
+
+describe('loadDefinitions', function () {
+    before(function () {
+        willy.loadDefinitions({
+            equal99: {
+                fn: function () {
+                    return this.actual === 99;
+                }
+            }
+        });
+    });
+
+    after(function () {
+        delete will().constructor.prototype.equal99;
+    });
+
+    it('should work', function () {
+        assert.doesNotThrow(function () {
+            will(99).equal99();
+        });
+    });  
+});
+
 describe('working with promises', function () {
     it('should work with "not.eventually" for success', function () {
-        return will(p(1)).eventually.not.be(2).then(function () {
+        return will(p(1)).eventually.not.be(2).then(function (value) {
             }, function () {
                 err('should not have thrown an error');
             });
@@ -854,13 +926,41 @@ describe('working with promises', function () {
         var promise = Q.Promise(function (resolve, reject) {
             setTimeout(function () {
                 resolve(1234);
+                // reject('broke own promise');
             }, 10);
         });
 
-        return will(promise).eventually.be(123).then(function () {
-            err('should have thrown an error');
-        }, function () {
-            // failed like it should have
-        });
+        // Intercept the promise so we can decide if it
+        // failed or not.
+        return will(promise).eventually.be(123).then(
+            
+            // promise fulfilled
+            function () {
+                err('should have thrown an error');
+            },
+
+            // promise rejected
+            function (err) {
+                // failed like it should have
+            }
+        );
+    });
+});
+
+describe('fix instanceof for literals', function () {
+    it('should work for Strings', function () {
+        will('asdf').beA(String);
+    });
+
+    it('should work for Objects', function () {
+        will({}).beAn(Object);
+    });
+
+    it('should work for Arrays', function () {
+        will([]).beAn(Array);
+    });
+
+    it('should work for Numbers', function () {
+        will(42).beA(Number);
     });
 });
