@@ -60,6 +60,12 @@ describe('beA/beAn', function () {
             will([]).beA(String);
         });
     });
+
+    it('should work for regular inheritance', function () {
+        var Foo = function () {};
+        var foo = new Foo();
+        will(foo).beA(Foo);
+    });
 });
 
 describe('exist', function () {
