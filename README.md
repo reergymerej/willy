@@ -37,6 +37,18 @@ expect(foo).toEqual(jasmine.any(Foo));
 will(foo).beA(Foo);
 ```
 
+Want to [add to Willy's repertoire](https://github.com/reergymerej/willy/wiki/Custom-Tests)?  That's easy, too.
+
+```javascript
+willy.define(function beASubstringOf() {
+    return this.expected.indexOf(this.actual) > -1;
+});
+
+will('potato').beASubstringOf('Bender Bending Rodriguez');
+// expected 'potato' to be a substring of 'Bender Bending Rodriguez'
+```
+
+
 ## Installation
 
 Use [npm](https://www.npmjs.org/doc/README.html), man.  Keep it simple.
