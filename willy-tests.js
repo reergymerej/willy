@@ -127,6 +127,20 @@ var allPropertiesExist = function (needles, hayStack) {
     return propertiesExist(needles, hayStack, true);
 };
 
+var testInstanceOf = function () {
+    var expression;
+
+    if (typeof this.actual === 'string' && this.expected === String) {
+        expression = true;
+    } else if (typeof this.actual === 'number' && this.expected === Number) {
+        expression = true;
+    } else {
+        expression = this.actual instanceof this.expected;
+    }
+
+    return expression;
+};
+
 /**
 * Throws error based on identity comparison.
 * @param {*} criterion
@@ -143,9 +157,7 @@ exports.be = {
 * @param {Function} criterion
 */
 exports.beA = {
-    fn: function () {
-        return this.actual instanceof this.expected;
-    }
+    fn: testInstanceOf
 };
 
 /**
@@ -153,9 +165,7 @@ exports.beA = {
 * @param {Function} criterion
 */
 exports.beAn = {
-    fn: function () {
-        return this.actual instanceof this.expected;
-    }
+    fn: testInstanceOf
 };
 
 /**

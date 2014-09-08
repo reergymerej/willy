@@ -234,5 +234,3 @@ exports.addTest = addTest;
 exports.define = define;
 exports.loadDefinitions = loadDefinitions;
 
-
-will('asdf').beA(String);

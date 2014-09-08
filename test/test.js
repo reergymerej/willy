@@ -941,8 +941,20 @@ describe('working with promises', function () {
     });
 });
 
-describe.only('fix instanceof for literals', function () {
-    it('should work for strings', function () {
+describe('fix instanceof for literals', function () {
+    it('should work for Strings', function () {
         will('asdf').beA(String);
+    });
+
+    it('should work for Objects', function () {
+        will({}).beAn(Object);
+    });
+
+    it('should work for Arrays', function () {
+        will([]).beAn(Array);
+    });
+
+    it('should work for Numbers', function () {
+        will(42).beA(Number);
     });
 });
