@@ -940,3 +940,9 @@ describe('working with promises', function () {
         );
     });
 });
+
+describe.only('fix instanceof for literals', function () {
+    it('should work for strings', function () {
+        will('asdf').beA(String);
+    });
+});

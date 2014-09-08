@@ -1,6 +1,7 @@
 'use strict';
 
 var Q = require('q');
+var util = require('util');
 
 var loadBuiltinTests = function () {
     loadDefinitions(require('./willy-tests.js'));
@@ -56,7 +57,7 @@ Question.prototype.isTrue = function (expression) {
 * @return {String}
 */
 Question.prototype.getErrorMessage = function (comparison, values) {
-    var msg = 'expected <' + this.actual + '>';
+    var msg = 'expected ' + util.inspect(this.actual);
 
     if (this.negative) {
         msg += ' not';
@@ -65,7 +66,7 @@ Question.prototype.getErrorMessage = function (comparison, values) {
     msg += ' to ' + this.explanation;
 
     if (this.hasExpected) {
-        msg += ' <' + this.expected + '>';
+        msg += ' ' + util.inspect(this.expected);
     }
 
     return msg;
@@ -148,22 +149,24 @@ var will = function (actual) {
 * @return {String}
 */
 var getExplanation = function (name) {
-    var regex = /([a-z]+|[A-Z]|[0-9]+)/g;
+    var regex = /([A-Z]|[0-9]+)/g;
+    var indices = [0];
     var words = [];
     var result = regex.exec(name);
+    var index;
 
     while (result !== null) {
-        if (result.index) {
-            words.push(name.substr(0, result.index).toLowerCase());
-            name = name.substr(result.index);
-        }
-        
+        indices.push(result.index);
         result = regex.exec(name);
     }
 
-    if (!words.length) {
-        words = [name];
-    }
+    // chop at the indices
+    indices.forEach(function (from, index, collection) {
+        var to = collection[index + 1];
+        var length = to && to - from;
+
+        words.push(name.substr(from, length).toLowerCase());
+    });
 
     return words.join(' ');
 };
@@ -230,3 +233,6 @@ exports.will = will;
 exports.addTest = addTest;
 exports.define = define;
 exports.loadDefinitions = loadDefinitions;
+
+
+will('asdf').beA(String);

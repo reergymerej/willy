@@ -1,28 +1,5 @@
 'use strict';
 
-var E = {
-    UNDEF: 'exist',
-    INST: 'be an instance of',
-    THROW: 'throw an error',
-    NOT_IN_ARR: 'have all of these items:',
-    EQ: 'be like',
-    STRICT_EQ: 'strictly equal',
-    NOT_IN_OBJ: 'have all of these properties:',
-    HAVE_OWN: 'have own',
-    HAVE_ANY_OBJ: 'have any of these properties:',
-    HAVE_ANY_ARR: 'have any of these items:',
-    ARR_HAS_EXTRA: 'have only these items:',
-    OBJ_HAS_EXTRA: 'have only these properties:',
-    MATCH: 'match RegExp:',
-    BE_DEFINED: 'be defined',
-    BE_UNDEFINED: 'be defined',
-    BE_NULL: 'be null',
-    BE_TRUTHY: 'be truthy',
-    BE_FALSY: 'be falsy',
-    BE_LESS_THAN: 'be less than',
-    BE_GREATER_THAN: 'be greater than'
-};
-
 /**
 * @return {Boolean} error thrown
 */
@@ -158,8 +135,7 @@ var allPropertiesExist = function (needles, hayStack) {
 exports.be = {
     fn: function () {
         return this.actual === this.expected;
-    },
-    explanation: E.STRICT_EQ
+    }
 };
 
 /**
@@ -169,8 +145,7 @@ exports.be = {
 exports.beA = {
     fn: function () {
         return this.actual instanceof this.expected;
-    },
-    explanation: E.INST
+    }
 };
 
 /**
@@ -180,8 +155,7 @@ exports.beA = {
 exports.beAn = {
     fn: function () {
         return this.actual instanceof this.expected;
-    },
-    explanation: E.INST
+    }
 };
 
 /**
@@ -227,8 +201,7 @@ exports.beLessThan = {
 exports.beLike = {
     fn: function () {
         return this.actual == this.expected;
-    },
-    explanation: E.EQ
+    }
 };
 
 /**
@@ -282,13 +255,13 @@ exports.exist = {
 * @throws {Error}
 */
 exports.have = {
-    fn: function have() {
+    fn: function () {
         if (!(this.expected instanceof Array)) {
             this.expected = [this.expected];
         }
         return allPropertiesExist(this.expected, this.actual);
     }, 
-    explanation: E.NOT_IN_ARR
+    explanation: 'have all of these items:'
 };
 
 /**
@@ -296,14 +269,14 @@ exports.have = {
 * @param {String/String[]} props
 */
 exports.haveAny = {
-    fn: function haveAny() {
+    fn: function () {
         if (!(this.expected instanceof Array)) {
             this.expected = [this.expected];
         }
 
         return anyPropExists(this.expected, this.actual);
     },
-    explanation: E.HAVE_ANY_ARR
+    explanation: 'have any of these items:'
 };
 
 /**
@@ -311,13 +284,13 @@ exports.haveAny = {
 * @param {*} criteria
 */
 exports.haveOnly = {
-    fn: function haveOnly() {
+    fn: function () {
         if (!(this.expected instanceof Array)) {
             this.expected = [this.expected];
         }
         return onlyThesePropsExist(this.expected, this.actual);
     },
-    explanation: E.ARR_HAS_EXTRA
+    explanation: 'have only these items:'
 };
 
 /**
@@ -327,8 +300,7 @@ exports.haveOnly = {
 exports.haveOwn = {
     fn: function () {
         return this.actual.hasOwnProperty(this.expected);
-    },
-    explanation: E.HAVE_OWN
+    }
 };
 
 /**
@@ -336,7 +308,7 @@ exports.haveOwn = {
 * @param {RegExp} regex
 */
 exports.match = {
-    fn: function match() {
+    fn: function () {
         return this.expected.test(this.actual);
     }
 };
