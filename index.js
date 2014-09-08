@@ -4,7 +4,7 @@ var Q = require('q');
 var util = require('util');
 
 var loadBuiltinTests = function () {
-    loadDefinitions(require('./willy-tests.js'));
+    loadDefinitions(require('./built-in.js'));
 };
 
 /**
