@@ -46,6 +46,100 @@ describe('beLike', function () {
             will('').beLike(true);
         });
     });
+
+    describe('when testing objects', function () {
+        it('should throw when arrays do not match', function () {
+            assert.throws(function () {
+                will([1, 2, 3]).beLike([1, 2]);
+            });
+        });
+
+        it('should throw when arrays match, but in wrong order', function () {
+            assert.throws(function () {
+                will([1, 2, 3]).beLike([3, 1, 2]);
+            });
+        });
+
+        it('should throw when objects\' properties do not match', function () {
+            assert.throws(function () {
+                will({
+                    foo: 'bar',
+                    baz: 123,
+                    quux: null
+                }).beLike({});
+            });
+        });
+
+        it('should throw when objects\' values do not match (==)', function () {
+            assert.throws(function () {
+                will({
+                    foo: 'bar',
+                    baz: 123,
+                    quux: null
+                }).beLike({
+                    foo: 'bingo',
+                    baz: 'bango',
+                    quux: 'bongo'
+                });
+            });
+        });
+
+        it('should not throw when objects\' values match (==)', function () {
+            assert.doesNotThrow(function () {
+                will({
+                    foo: 'bar',
+                    baz: 123,
+                    quux: null
+                }).beLike({
+                    foo: 'bar',
+                    baz: 123,
+                    quux: null
+                });
+            });
+        });
+
+        it('should work when arrays are found', function () {
+            assert.doesNotThrow(function () {
+                will({
+                    foo: [1, 2, 3]
+                }).beLike({
+                    foo: [1, 2, 3]  
+                });
+            });
+        });
+
+        it('should throw when non-matching arrays are found', function () {
+            assert.throws(function () {
+                will({
+                    foo: [1, 2, 3]
+                }).beLike({
+                    foo: [1, 2]
+                });
+            });
+        });
+
+        it('should work recursively', function () {
+            assert.throws(function () {
+                will({
+                    foo: {
+                        bar: {
+                            baz: {
+                                quux: true
+                            }
+                        }
+                    }
+                }).beLike({
+                    foo: {
+                        bar: {
+                            baz: {
+                                quux: false
+                            }
+                        }
+                    }
+                });
+            });
+        });
+    });
 });
 
 describe('beA/beAn', function () {
