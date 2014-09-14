@@ -130,12 +130,18 @@ var allPropertiesExist = function (needles, hayStack) {
 var testInstanceOf = function () {
     var expression;
 
-    if (typeof this.actual === 'string' && this.expected === String) {
-        expression = true;
-    } else if (typeof this.actual === 'number' && this.expected === Number) {
-        expression = true;
-    } else {
-        expression = this.actual instanceof this.expected;
+    switch (this.expected) {
+        case String:
+            expression = typeof this.actual === 'string';
+            break;
+        case Number:
+            expression = typeof this.actual === 'number';
+            break;
+        case Boolean:
+            expression = typeof this.actual === 'boolean';
+            break;
+        default:
+            expression = this.actual instanceof this.expected;
     }
 
     return expression;

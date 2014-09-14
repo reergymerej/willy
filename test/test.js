@@ -963,4 +963,8 @@ describe('fix instanceof for literals', function () {
     it('should work for Numbers', function () {
         will(42).beA(Number);
     });
+
+    it('should work for Booleans', function () {
+        will(true).beA(Boolean);
+    });
 });
