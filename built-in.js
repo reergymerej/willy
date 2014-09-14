@@ -147,62 +147,6 @@ var testInstanceOf = function () {
     return expression;
 };
 
-var isPOJO = function (item) {
-    return Object.prototype.toString.call(item) === '[object Object]';
-};
-
-/**
-* return `true` if `item` is an Object (POJO) or Array
-*/
-var isIterable = function (item) {
-    return Array.isArray(item) || isPOJO(item);
-};
-
-/**
-* Test equality.
-* @return {Boolean}
-*/
-var areEqual = function (a, b) {
-    var expression;
-
-    if (isIterable(a)) {
-        expression = objectsMatch(a, b);
-    } else {
-        expression = a == b;
-    }
-
-    return expression;
-};
-
-/**
-* Compares two objects.  Returns true if both have the same
-* properties with the same equality.
-*/
-var objectsMatch = function (a, b) {
-    var isMatch = false;
-    var aKeys = Object.keys(a);
-    var bKeys = Object.keys(b);
-    
-    if (isIterable(a) && isIterable(b)) {
-        if (aKeys.length === bKeys.length) {
-            isMatch = true;
-
-            aKeys.forEach(function (key) {
-                if (isMatch) {
-                    if (isIterable(a[key]) ||
-                        isIterable(b[key])) {
-                            isMatch = areEqual(a[key], b[key]);
-                    } else {
-                        isMatch = a[key] == b[key];
-                    }
-                }
-            }, this);
-        }
-    }
-
-    return isMatch;
-};
-
 /**
 * Throws error based on identity comparison.
 * @param {*} criterion
@@ -272,8 +216,7 @@ exports.beLessThan = {
 */
 exports.beLike = {
     fn: function () {
-        // TODO: Add dcumentation for how this works with objects/arrays.
-        return areEqual(this.actual, this.expected);
+        return this.actual == this.expected;
     }
 };
 
