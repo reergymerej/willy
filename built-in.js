@@ -272,7 +272,6 @@ exports.beLessThan = {
 */
 exports.beLike = {
     fn: function () {
-        // TODO: Add dcumentation for how this works with objects/arrays.
         return areEqual(this.actual, this.expected);
     }
 };
