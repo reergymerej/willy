@@ -34,6 +34,26 @@ describe('be', function () {
     });
 });
 
+describe('beA/beAn', function () {
+    it('should not throw if is an instanceof', function () {
+        assert.doesNotThrow(function () {
+            will([]).beAn(Array);
+        });
+    });
+
+    it('should throw if item is not an instanceof', function () {
+        assert.throws(function () {
+            will([]).beA(String);
+        });
+    });
+
+    it('should work for regular inheritance', function () {
+        var Foo = function () {};
+        var foo = new Foo();
+        will(foo).beA(Foo);
+    });
+});
+
 describe('beLike', function () {
     it('should not throw if passes equality comparison', function () {
         assert.doesNotThrow(function () {
@@ -88,11 +108,11 @@ describe('beLike', function () {
             assert.doesNotThrow(function () {
                 will({
                     foo: 'bar',
-                    baz: 123,
+                    baz: [1, 2, 3],
                     quux: null
                 }).beLike({
                     foo: 'bar',
-                    baz: 123,
+                    baz: [1, 2, 3],
                     quux: null
                 });
             });
@@ -137,28 +157,16 @@ describe('beLike', function () {
                         }
                     }
                 });
+
+                will({
+                    foo: true,
+                    bar: [1, 2, 3]
+                }).beLike({
+                    foo: true,
+                    bar: [1, 2, 3]
+                });
             });
         });
-    });
-});
-
-describe('beA/beAn', function () {
-    it('should not throw if is an instanceof', function () {
-        assert.doesNotThrow(function () {
-            will([]).beAn(Array);
-        });
-    });
-
-    it('should throw if item is not an instanceof', function () {
-        assert.throws(function () {
-            will([]).beA(String);
-        });
-    });
-
-    it('should work for regular inheritance', function () {
-        var Foo = function () {};
-        var foo = new Foo();
-        will(foo).beA(Foo);
     });
 });
 
