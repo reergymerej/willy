@@ -1,6 +1,6 @@
 {
   "name": "willy",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An assertion library that reads very naturally.",
   "main": "index.js",
   "directories": {
@@ -30,8 +30,7 @@
   },
   "homepage": "https://github.com/reergymerej/willy",
   "devDependencies": {
-    "mocha": "~1.19.0",
-    "q": "~1.0.1"
+    "mocha": "~1.19.0"
   },
   "dependencies": {
     "q": "~1.0.1"
