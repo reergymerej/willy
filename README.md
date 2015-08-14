@@ -1,4 +1,4 @@
-# Willy v1.0.1 [![Build Status](https://travis-ci.org/reergymerej/willy.svg)](https://travis-ci.org/reergymerej/willy)
+# Willy v1.0.2 [![Build Status](https://travis-ci.org/reergymerej/willy.svg?branch=1.0.2)](https://travis-ci.org/reergymerej/willy)
 
 <a href="#installation">Installation</a> |
 <a href="#built-in">Built-in Tests</a> |
@@ -355,7 +355,7 @@ will(foo).haveOwn('baz');
 ```
 
 <a name="match"></a>
-#### Match
+#### match
 Test against RegExp.
 
 ```js
