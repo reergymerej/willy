@@ -52,12 +52,22 @@ Question.prototype.isTrue = function (expression) {
 
 /**
 * Get a formatted string for an error.
-* @param {String} comparison text version of comparison
-* @param {*} values item was tested against
 * @return {String}
 */
-Question.prototype.getErrorMessage = function (comparison, values) {
-    var msg = 'expected ' + util.inspect(this.actual);
+Question.prototype.getErrorMessage = function () {
+    // var msg = 'expected ' + util.inspect(this.actual);
+    var actualIsComplex = Array.isArray(this.actual) ||
+        Object.prototype.toString() === '[object Object]';
+
+    var actualBuffer = actualIsComplex ? '\n' : '';
+
+    var expectedIsComplex = Array.isArray(this.expected) ||
+        Object.prototype.toString() === '[object Object]';
+
+    var expectedBuffer = expectedIsComplex ? '\n' : '';
+
+    var msg = 'expected ' + actualBuffer +
+        util.inspect(this.actual) + actualBuffer;
 
     if (this.negative) {
         msg += ' not';
@@ -66,7 +76,7 @@ Question.prototype.getErrorMessage = function (comparison, values) {
     msg += ' to ' + this.explanation;
 
     if (this.hasExpected) {
-        msg += ' ' + util.inspect(this.expected);
+        msg += ' ' + expectedBuffer + util.inspect(this.expected);
     }
 
     return msg;

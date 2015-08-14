@@ -1,4 +1,4 @@
-# Willy v1.0.1
+# Willy v1.0.2 [![Build Status](https://travis-ci.org/reergymerej/willy.svg?branch=1.0.2)](https://travis-ci.org/reergymerej/willy)
 
 <a href="#installation">Installation</a> |
 <a href="#built-in">Built-in Tests</a> |
@@ -86,7 +86,7 @@ Use [npm](https://www.npmjs.org/doc/README.html), man.  Keep it simple.
 * <a href="#throw">throw</a>
 
 <a name="be"></a>
-##### be 
+##### be
 Test [identity](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Comparison_Operators#Identity_.2F_strict_equality_(.3D.3D.3D)).
 
 ```js
@@ -100,7 +100,7 @@ will('3').be(3);
 <a name="beA"></a>
 <a name="beAn"></a>
 ##### beA/beAn
-Test inheritance.  
+Test inheritance.
 This also handles some of the [weirdness of JavaScript](http://stackoverflow.com/questions/472418/why-is-4-not-an-instance-of-number), so that `String` and `Number` literals act as expected.
 
 ```js
@@ -283,7 +283,7 @@ will(foo.baz).exist();
 
 <a name="have"></a>
 ##### have
-Test the existence of multiple items/properties in an Array/Object.  
+Test the existence of multiple items/properties in an Array/Object.
 *all must be present*
 
 ```js
@@ -355,7 +355,7 @@ will(foo).haveOwn('baz');
 ```
 
 <a name="match"></a>
-#### Match
+#### match
 Test against RegExp.
 
 ```js
