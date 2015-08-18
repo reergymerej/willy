@@ -1,4 +1,4 @@
-# Willy v1.0.2 [![Build Status](https://travis-ci.org/reergymerej/willy.svg?branch=1.0.2)](https://travis-ci.org/reergymerej/willy)
+[![Build Status](https://travis-ci.org/reergymerej/willy.svg?branch=master)](https://travis-ci.org/reergymerej/willy)
 
 <a href="#installation">Installation</a> |
 <a href="#built-in">Built-in Tests</a> |
