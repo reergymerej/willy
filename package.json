@@ -1,0 +1,36 @@
+{
+  "version": "2.0.0",
+  "name": "willy",
+  "main": "lib/index.js",
+  "description": "An assertion library that reads very naturally.",
+  "keywords": [
+    "assertion library",
+    "assertion",
+    "assert",
+    "bdd",
+    "tdd",
+    "natural",
+    "unit tests",
+    "promises"
+  ],
+  "author": "Jeremy Greer <jeremy.greer.atl@gmail.com> (http://reergymerej.herokuapp.com/)",
+  "scripts": {
+    "start": "babel-node src/index.js",
+    "test": "mocha --compilers js:babel-register",
+    "lint": "eslint .",
+    "build": "babel src -d lib",
+    "prepublish": "npm run build"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-register": "^6.9.0",
+    "mocha": "^2.5.3",
+    "q": "^1.4.1"
+  },
+  "dependencies": {},
+  "license": "ISC",
+  "directories": {
+    "test": "test"
+  }
+}
