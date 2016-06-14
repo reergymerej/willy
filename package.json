@@ -16,7 +16,7 @@
   "author": "Jeremy Greer <jeremy.greer.atl@gmail.com> (http://reergymerej.herokuapp.com/)",
   "scripts": {
     "start": "babel-node src/index.js",
-    "test": "mocha --compilers js:babel-register",
+    "test": "mocha --compilers js:babel-register --recursive",
     "lint": "eslint .",
     "build": "babel src -d lib",
     "prepublish": "npm run build"
