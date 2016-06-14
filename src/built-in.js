@@ -220,6 +220,7 @@ exports.be = {
 * @param {Function} criterion
 */
 exports.beA = {
+  name: 'beA',
   fn: testInstanceOf
 };
 
@@ -228,6 +229,7 @@ exports.beA = {
 * @param {Function} criterion
 */
 exports.beAn = {
+  name: 'beAn',
   fn: testInstanceOf
 };
 

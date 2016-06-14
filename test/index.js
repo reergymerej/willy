@@ -904,6 +904,7 @@ describe('loadDefinitions', function () {
   before(function () {
     willy.loadDefinitions({
       equal99: {
+        name: 'equal99',
         fn: function () {
           return this.actual === 99;
         }
