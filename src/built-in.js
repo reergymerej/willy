@@ -20,7 +20,6 @@ var mayThrow = function (fn) {
 * @param {Function} value, key - return false to stop
 */
 var forEach = function (item, fn) {
-  // TODO: use Object.keys, man
   var i,
     max;
 
