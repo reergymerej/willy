@@ -80,7 +80,7 @@ var anyPropExists = function (needles, hayStack) {
   var result = false,
     isArray = hayStack instanceof Array;
 
-  forEach(needles, function (value, key) {
+  forEach(needles, function (value) {
 
     if (isArray) {
       result = hayStack.indexOf(value) !== -1;
@@ -106,7 +106,7 @@ var propertiesExist = function (needles, hayStack, all) {
     isArray = hayStack instanceof Array,
     found;
 
-  forEach(needles, function (value, key) {
+  forEach(needles, function (value) {
 
     if (isArray) {
       found = hayStack.indexOf(value) !== -1;
@@ -168,7 +168,7 @@ var areEqual = function (a, b) {
   if (isIterable(a)) {
     expression = objectsMatch(a, b);
   } else {
-    expression = a == b;
+    expression = a == b; // eslint-disable-line
   }
 
   return expression;
@@ -193,7 +193,7 @@ var objectsMatch = function (a, b) {
             isIterable(b[key])) {
               isMatch = areEqual(a[key], b[key]);
           } else {
-            isMatch = a[key] == b[key];
+            isMatch = a[key] == b[key]; // eslint-disable-line
           }
         }
       }, this);

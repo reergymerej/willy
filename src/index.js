@@ -163,7 +163,6 @@ var getExplanation = function (name) {
   var indices = [0];
   var words = [];
   var result = regex.exec(name);
-  var index;
 
   while (result !== null) {
     indices.push(result.index);
@@ -203,7 +202,7 @@ var define = function (fn, explanation, fnName) {
   explanation = explanation || getExplanation(fnName);
 
   if (!fnName) {
-    console.error(fn.toString());
+    // console.error(fn.toString());
     throw new Error('This test has no name.');
   }
 

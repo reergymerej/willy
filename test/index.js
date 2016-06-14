@@ -925,7 +925,7 @@ describe('loadDefinitions', function () {
 
 describe('working with promises', function () {
   it('should work with "not.eventually" for success', function () {
-    return will(p(1)).eventually.not.be(2).then(function (value) {
+    return will(p(1)).eventually.not.be(2).then(function () {
       }, function () {
         err('should not have thrown an error');
       });
@@ -956,7 +956,7 @@ describe('working with promises', function () {
   });
 
   it('should work async', function () {
-    var promise = Q.Promise(function (resolve, reject) {
+    var promise = Q.Promise(function (resolve) {
       setTimeout(function () {
         resolve(1234);
         // reject('broke own promise');
@@ -973,7 +973,7 @@ describe('working with promises', function () {
       },
 
       // promise rejected
-      function (err) {
+      function () {
         // failed like it should have
       }
     );
