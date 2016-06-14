@@ -1,6 +1,5 @@
 'use strict';
 
-var Q = require('q');
 var assert = require('assert');
 var willy = require('../src'),
   will = willy.will;
@@ -11,7 +10,7 @@ var err = function (msg) {
 
 // get a basic promise that will return val
 var p = function (val) {
-  return Q.fcall(function () { return val; });
+  return Promise.resolve(val);
 };
 
 describe('will', function () {
@@ -956,12 +955,7 @@ describe('working with promises', function () {
   });
 
   it('should work async', function () {
-    var promise = Q.Promise(function (resolve) {
-      setTimeout(function () {
-        resolve(1234);
-        // reject('broke own promise');
-      }, 10);
-    });
+    var promise = Promise.reject(123);
 
     // Intercept the promise so we can decide if it
     // failed or not.

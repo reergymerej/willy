@@ -1,6 +1,5 @@
 'use strict';
 
-var Q = require('q');
 var util = require('util');
 
 /**
@@ -107,7 +106,7 @@ Question.prototype.if = function (testCallback, message, criteria) {
 
     // Return our own promise so we can deal with the
     // promise being tested.
-    return Q.Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       // Add to the end of the test's promise so we can
       // get the resolved value.
