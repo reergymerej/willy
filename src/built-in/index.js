@@ -1,4 +1,11 @@
-'use strict';
+import be from './be';
+import { beA, beAn } from './beA';
+
+export {
+  be,
+  beA,
+  beAn,
+};
 
 /**
 * @return {Boolean} error thrown
@@ -126,26 +133,6 @@ var allPropertiesExist = function (needles, hayStack) {
   return propertiesExist(needles, hayStack, true);
 };
 
-var testInstanceOf = function () {
-  var expression;
-
-  switch (this.expected) {
-    case String:
-      expression = typeof this.actual === 'string';
-      break;
-    case Number:
-      expression = typeof this.actual === 'number';
-      break;
-    case Boolean:
-      expression = typeof this.actual === 'boolean';
-      break;
-    default:
-      expression = this.actual instanceof this.expected;
-  }
-
-  return expression;
-};
-
 var isPOJO = function (item) {
   return Object.prototype.toString.call(item) === '[object Object]';
 };
@@ -200,36 +187,6 @@ var objectsMatch = function (a, b) {
   }
 
   return isMatch;
-};
-
-/**
-* Throws error based on identity comparison.
-* @param {*} criterion
-* @return {Promise}
-*/
-exports.be = {
-  name: 'be',
-  fn: function () {
-    return this.actual === this.expected;
-  }
-};
-
-/**
-* Tests inheritance
-* @param {Function} criterion
-*/
-exports.beA = {
-  name: 'beA',
-  fn: testInstanceOf
-};
-
-/**
-* Tests inheritance
-* @param {Function} criterion
-*/
-exports.beAn = {
-  name: 'beAn',
-  fn: testInstanceOf
 };
 
 /**
